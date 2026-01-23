@@ -12,8 +12,12 @@ Route::get('/dashboard', function () {
     // return view('dashboard');
     
     // For the admin dashboard HTML we created, return it directly
-    return view('admin-dashboard'); // Make sure you save the HTML as admin-dashboard.blade.php
+    return view('admin.admin-dashboard'); // admin-dashboard.blade.php is in resources/views/admin/
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/voter-dashboard', function () {
+    return view('voter.voter-dashboard');
+})->middleware(['auth', 'verified'])->name('voter-dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

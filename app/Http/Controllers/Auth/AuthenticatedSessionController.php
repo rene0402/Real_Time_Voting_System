@@ -28,6 +28,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Redirect based on user type
+        $user = Auth::user();
+        if ($user && $user->user_type === 'voter') {
+            return redirect()->intended(route('voter-dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

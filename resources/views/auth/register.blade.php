@@ -16,6 +16,26 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- User Type -->
+        <div class="mt-4">
+            <x-input-label for="user_type" :value="__('Account Type')" />
+            <div class="mt-2 space-y-2">
+                <div class="flex items-center">
+                    <input id="voter" type="radio" name="user_type" value="voter" {{ old('user_type') === 'voter' ? 'checked' : '' }} required class="w-4 h-4 text-indigo-600">
+                    <label for="voter" class="ms-2 text-sm font-medium text-gray-700">
+                        {{ __('Voter') }}
+                    </label>
+                </div>
+                <div class="flex items-center">
+                    <input id="admin" type="radio" name="user_type" value="admin" {{ old('user_type') === 'admin' ? 'checked' : '' }} required class="w-4 h-4 text-indigo-600">
+                    <label for="admin" class="ms-2 text-sm font-medium text-gray-700">
+                        {{ __('Administrator') }}
+                    </label>
+                </div>
+            </div>
+            <x-input-error :messages="$errors->get('user_type')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
