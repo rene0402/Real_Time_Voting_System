@@ -604,6 +604,203 @@
             background: #c0392b;
         }
 
+        /* Election Management Styles */
+        .election-tabs {
+            display: flex;
+            border-bottom: 2px solid #eaeaea;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .election-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #7f8c8d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .election-tab.active {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .election-tab:hover:not(.active) {
+            color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .election-section {
+            display: none;
+        }
+
+        .election-section.active-election-section {
+            display: block;
+        }
+
+        /* Form Styles */
+        .election-form {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eaeaea;
+        }
+
+        /* Management Grid */
+        .manage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .manage-content {
+            padding: 1rem 0;
+        }
+
+        .manage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .manage-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Security Grid */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .security-content {
+            padding: 1rem 0;
+        }
+
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .security-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-count {
+            background: #e74c3c;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .countdown-timer {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .countdown-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Emergency Buttons */
+        .emergency-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .emergency-btn.pause {
+            background: #f39c12;
+            color: white;
+        }
+
+        .emergency-btn.pause:hover {
+            background: #e67e22;
+        }
+
+        .emergency-btn.close {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .emergency-btn.close:hover {
+            background: #c0392b;
+        }
+
+        .emergency-btn.lock {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .emergency-btn.lock:hover {
+            background: #8e44ad;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .charts-section {
@@ -612,6 +809,11 @@
 
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .manage-grid,
+            .security-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -670,6 +872,14 @@
 
             .chart-container {
                 height: 300px;
+            }
+
+            .election-tabs {
+                padding-bottom: 0.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1045,14 +1255,269 @@
                 </div>
             </div>
 
-            <!-- Additional sections would continue here for Election Management, Audit Logs, etc. -->
+            <!-- Election Management Section -->
             <div id="elections" class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Election Management</div>
+                <!-- Election Overview Stats -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalElections">5</div>
+                        <div class="stat-label">Total Elections</div>
                     </div>
-                    <div class="card-value">Coming Soon</div>
-                    <div class="card-change">This section is under development</div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeElectionsCount">2</div>
+                        <div class="stat-label">Active Elections</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalVotesElection">3,247</div>
+                        <div class="stat-label">Total Votes Cast</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgParticipation">68.5%</div>
+                        <div class="stat-label">Avg Participation</div>
+                    </div>
+                </div>
+
+                <!-- Election Management Tabs -->
+                <div class="election-tabs">
+                    <div class="election-tab active" onclick="showElectionSection('overview')">Elections</div>
+                    <div class="election-tab" onclick="showElectionSection('create')">Create</div>
+                    <div class="election-tab" onclick="showElectionSection('manage')">Manage</div>
+                    <div class="election-tab" onclick="showElectionSection('security')">Security</div>
+                </div>
+
+                <!-- Election Overview Panel -->
+                <div id="election-overview" class="election-section active-election-section">
+                    <div class="table-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 class="chart-title">All Elections</h3>
+                            <div>
+                                <input type="text" class="search-input" placeholder="Search..." id="electionSearch">
+                                <button class="action-btn btn-primary" onclick="showElectionSection('create')">+ New Election</button>
+                            </div>
+                        </div>
+                        <table id="electionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Election Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Votes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Presidential Election 2024</td>
+                                    <td>Single Position</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>Dec 1, 2024</td>
+                                    <td>Dec 15, 2024</td>
+                                    <td>1,247</td>
+                                    <td>
+                                        <button class="action-btn btn-view" onclick="viewElection(1)">View</button>
+                                        <button class="action-btn btn-edit" onclick="editElection(1)">Edit</button>
+                                        <button class="action-btn btn-approve" onclick="closeElection(1)">Close</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Board of Directors Election</td>
+                                    <td>Multi-Position</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>Dec 5, 2024</td>
+                                    <td>Dec 20, 2024</td>
+                                    <td>892</td>
+                                    <td>
+                                        <button class="action-btn btn-view" onclick="viewElection(2)">View</button>
+                                        <button class="action-btn btn-edit" onclick="editElection(2)">Edit</button>
+                                        <button class="action-btn btn-approve" onclick="closeElection(2)">Close</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Student Council Election</td>
+                                    <td>Multi-Position</td>
+                                    <td><span class="status-badge status-scheduled">Scheduled</span></td>
+                                    <td>Jan 15, 2025</td>
+                                    <td>Jan 30, 2025</td>
+                                    <td>0</td>
+                                    <td>
+                                        <button class="action-btn btn-view" onclick="viewElection(3)">View</button>
+                                        <button class="action-btn btn-edit" onclick="editElection(3)">Edit</button>
+                                        <button class="action-btn btn-approve" onclick="activateElection(3)">Activate</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Constitutional Referendum</td>
+                                    <td>Referendum</td>
+                                    <td><span class="status-badge status-closed">Closed</span></td>
+                                    <td>Nov 1, 2024</td>
+                                    <td>Nov 10, 2024</td>
+                                    <td>2,156</td>
+                                    <td>
+                                        <button class="action-btn btn-view" onclick="viewElection(4)">View</button>
+                                        <button class="action-btn btn-approve" onclick="publishResults(4)">Publish</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Create/Edit Election Section -->
+                <div id="election-create" class="election-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Create / Edit Election</div>
+                        </div>
+                        <div class="election-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Election Title</label>
+                                    <input type="text" class="form-input" id="electionTitle" placeholder="Enter election title">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Election Type</label>
+                                    <select class="form-input" id="electionType">
+                                        <option value="single">Single Position</option>
+                                        <option value="multi">Multi-Position</option>
+                                        <option value="referendum">Referendum</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Start Date & Time</label>
+                                    <input type="datetime-local" class="form-input" id="electionStart">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">End Date & Time</label>
+                                    <input type="datetime-local" class="form-input" id="electionEnd">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input" id="electionDescription" rows="2" placeholder="Brief description"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button class="action-btn btn-secondary" onclick="showElectionSection('overview')">Cancel</button>
+                                <button class="action-btn btn-primary" onclick="saveElection()">Save Election</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Section (Combined Candidates, Voters, Results) -->
+                <div id="election-manage" class="election-section">
+                    <div class="manage-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Candidates</div>
+                            </div>
+                            <div class="manage-content">
+                                <div class="manage-item">
+                                    <span>John Smith - President</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                                <div class="manage-item">
+                                    <span>Jane Doe - President</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                                <button class="action-btn btn-primary" onclick="addCandidate()" style="margin-top: 1rem;">Add Candidate</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Voters</div>
+                            </div>
+                            <div class="manage-content">
+                                <div class="manage-item">
+                                    <span>1,250 Registered Voters</span>
+                                    <span class="status-badge status-active">Verified</span>
+                                </div>
+                                <div class="manage-item">
+                                    <span>890 Votes Cast</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                                <button class="action-btn btn-secondary" onclick="manageVoters()" style="margin-top: 1rem;">Manage Voters</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Results</div>
+                            </div>
+                            <div class="manage-content">
+                                <div class="manage-item">
+                                    <span>Presidential Election 2024</span>
+                                    <span class="status-badge status-closed">Completed</span>
+                                </div>
+                                <div class="manage-item">
+                                    <span>Winner: John Smith</span>
+                                    <span>1,247 votes (71.2%)</span>
+                                </div>
+                                <button class="action-btn btn-primary" onclick="viewResults()" style="margin-top: 1rem;">View Results</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section (Combined Monitoring, Audit, Emergency) -->
+                <div id="election-security" class="election-section">
+                    <div class="security-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">AI Security</div>
+                            </div>
+                            <div class="security-content">
+                                <div class="security-item">
+                                    <span>AI Detection</span>
+                                    <label class="toggle-label">
+                                        <input type="checkbox" id="aiDetectionEnabled" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="security-item">
+                                    <span>Active Alerts</span>
+                                    <span class="alert-count">3</span>
+                                </div>
+                                <button class="action-btn btn-secondary" onclick="viewAlerts()" style="margin-top: 1rem;">View Alerts</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Live Monitoring</div>
+                            </div>
+                            <div class="security-content">
+                                <div class="security-item">
+                                    <span>Active Voters</span>
+                                    <span id="activeVoters">47</span>
+                                </div>
+                                <div class="security-item">
+                                    <span>Votes/Minute</span>
+                                    <span id="votesPerMinute">12</span>
+                                </div>
+                                <div class="countdown-timer" style="margin-top: 1rem;">
+                                    <div class="countdown-display" id="electionCountdown">23:45:12</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Emergency Controls</div>
+                            </div>
+                            <div class="security-content">
+                                <button class="emergency-btn pause" onclick="pauseElection()">
+                                    <i class="fas fa-pause"></i> Pause
+                                </button>
+                                <button class="emergency-btn close" onclick="forceCloseElection()">
+                                    <i class="fas fa-times-circle"></i> Close
+                                </button>
+                                <button class="emergency-btn lock" onclick="lockResults()">
+                                    <i class="fas fa-lock"></i> Lock Results
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1432,6 +1897,100 @@
             }
         }, 5000);
 
+        // Election Management Functions
+        function showElectionSection(sectionId) {
+            // Hide all election sections
+            document.querySelectorAll('.election-section').forEach(section => {
+                section.classList.remove('active-election-section');
+            });
+
+            // Remove active class from all election tabs
+            document.querySelectorAll('.election-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById('election-' + sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active-election-section');
+            }
+
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+        }
+
+        // Election action functions
+        function viewElection(id) {
+            showNotification(`Viewing election details for ID: ${id}`, 'info');
+        }
+
+        function editElection(id) {
+            showElectionSection('create');
+            showNotification(`Editing election ID: ${id}`, 'info');
+        }
+
+        function closeElection(id) {
+            if (confirm('Are you sure you want to close this election?')) {
+                showNotification(`Election ${id} has been closed`, 'success');
+            }
+        }
+
+        function activateElection(id) {
+            if (confirm('Are you sure you want to activate this election?')) {
+                showNotification(`Election ${id} has been activated`, 'success');
+            }
+        }
+
+        function publishResults(id) {
+            if (confirm('Are you sure you want to publish the results?')) {
+                showNotification(`Results for election ${id} have been published`, 'success');
+            }
+        }
+
+        function saveElection() {
+            const title = document.getElementById('electionTitle').value;
+            if (!title.trim()) {
+                showNotification('Please enter an election title', 'error');
+                return;
+            }
+            showNotification(`Election "${title}" has been saved`, 'success');
+            showElectionSection('overview');
+        }
+
+        function addCandidate() {
+            showNotification('Add candidate functionality would open a modal', 'info');
+        }
+
+        function manageVoters() {
+            showNotification('Manage voters functionality would open voter management', 'info');
+        }
+
+        function viewResults() {
+            showNotification('View results functionality would show detailed results', 'info');
+        }
+
+        function viewAlerts() {
+            showNotification('View alerts functionality would show AI security alerts', 'info');
+        }
+
+        function pauseElection() {
+            if (confirm('Are you sure you want to pause the election?')) {
+                showNotification('Election has been paused', 'warning');
+            }
+        }
+
+        function forceCloseElection() {
+            if (confirm('Are you sure you want to force close the election? This action cannot be undone.')) {
+                showNotification('Election has been force closed', 'error');
+            }
+        }
+
+        function lockResults() {
+            if (confirm('Are you sure you want to lock the results?')) {
+                showNotification('Election results have been locked', 'success');
+            }
+        }
+
         // Add CSS for notification animation
         const style = document.createElement('style');
         style.textContent = `
@@ -1448,6 +2007,51 @@
 
             .notification {
                 font-family: 'Instrument Sans', sans-serif;
+            }
+
+            .toggle-label {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+                cursor: pointer;
+            }
+
+            .toggle-label input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .toggle-slider {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                border-radius: 24px;
+                transition: 0.4s;
+            }
+
+            .toggle-slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                border-radius: 50%;
+                transition: 0.4s;
+            }
+
+            input:checked + .toggle-slider {
+                background-color: #27ae60;
+            }
+
+            input:checked + .toggle-slider:before {
+                transform: translateX(26px);
             }
         `;
         document.head.appendChild(style);

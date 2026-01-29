@@ -25,4 +25,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('voter-management', \App\Http\Controllers\Admin\VoterController::class);
+    Route::patch('voter-management/{id}/approve', [\App\Http\Controllers\Admin\VoterController::class, 'approve'])->name('voter-management.approve');
+    Route::patch('voter-management/{id}/block', [\App\Http\Controllers\Admin\VoterController::class, 'block'])->name('voter-management.block');
+    Route::patch('voter-management/{id}/unblock', [\App\Http\Controllers\Admin\VoterController::class, 'unblock'])->name('voter-management.unblock');
+});
+
 require __DIR__.'/auth.php';
