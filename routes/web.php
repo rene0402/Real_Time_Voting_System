@@ -8,11 +8,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    // For Laravel Breeze/Blade, use the dashboard view
-    // return view('dashboard');
-    
-    // For the admin dashboard HTML we created, return it directly
-    return view('admin.admin-dashboard'); // admin-dashboard.blade.php is in resources/views/admin/
+    // Redirect admin users to admin dashboard
+    return redirect('/admin/dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/voter-dashboard', function () {
@@ -27,10 +24,21 @@ Route::middleware('auth')->group(function () {
 
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.admin-dashboard');
+    })->name('dashboard');
+
     Route::resource('voter-management', \App\Http\Controllers\Admin\VoterController::class);
     Route::patch('voter-management/{id}/approve', [\App\Http\Controllers\Admin\VoterController::class, 'approve'])->name('voter-management.approve');
     Route::patch('voter-management/{id}/block', [\App\Http\Controllers\Admin\VoterController::class, 'block'])->name('voter-management.block');
     Route::patch('voter-management/{id}/unblock', [\App\Http\Controllers\Admin\VoterController::class, 'unblock'])->name('voter-management.unblock');
+
+    // API routes for AJAX functionality
+    Route::get('api/voters', [\App\Http\Controllers\Admin\VoterController::class, 'apiIndex'])->name('api.voters');
+    Route::post('api/voters/{id}/approve', [\App\Http\Controllers\Admin\VoterController::class, 'apiApprove'])->name('api.voters.approve');
+    Route::post('api/voters/{id}/block', [\App\Http\Controllers\Admin\VoterController::class, 'apiBlock'])->name('api.voters.block');
+    Route::post('api/voters/{id}/unblock', [\App\Http\Controllers\Admin\VoterController::class, 'apiUnblock'])->name('api.voters.unblock');
+    Route::delete('api/voters/{id}', [\App\Http\Controllers\Admin\VoterController::class, 'apiDestroy'])->name('api.voters.destroy');
 });
 
 require __DIR__.'/auth.php';
