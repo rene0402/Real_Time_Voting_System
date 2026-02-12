@@ -899,6 +899,52 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* Toggle Slider Styles */
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-label input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 24px;
+            transition: 0.4s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #27ae60;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -937,6 +983,9 @@
                 <li class="nav-item" onclick="showSection('voters')">
                     <i class="nav-icon fas fa-users"></i>Voter Management
                 </li>
+                <li class="nav-item" onclick="showSection('candidates')">
+                    <i class="nav-icon fas fa-user-tie"></i>Candidates
+                </li>
                 <li class="nav-item" onclick="showSection('elections')">
                     <i class="nav-icon fas fa-vote-yea"></i>Election Management
                 </li>
@@ -952,8 +1001,8 @@
                 <li class="nav-item" onclick="showSection('reports')">
                     <i class="nav-icon fas fa-chart-pie"></i>Reports & Analytics
                 </li>
-                <li class="nav-item" onclick="showSection('settings')">
-                    <i class="nav-icon fas fa-cog"></i>Settings
+                <li class="nav-item" onclick="showSection('completed')">
+                    <i class="nav-icon fas fa-check-circle"></i>Completed Elections
                 </li>
             </ul>
 
@@ -1004,19 +1053,19 @@
                 <!-- Quick Stats -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-value" id="totalVoters">1,250</div>
+                        <div class="stat-value" id="totalVoters">{{ number_format($totalVoters) }}</div>
                         <div class="stat-label">Registered Voters</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="votesCast">890</div>
+                        <div class="stat-value" id="votesCast">{{ number_format($votesCast) }}</div>
                         <div class="stat-label">Votes Cast</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="participationRate">71.2%</div>
+                        <div class="stat-value" id="participationRate">{{ $participationRate }}%</div>
                         <div class="stat-label">Participation Rate</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="activeElections">3</div>
+                        <div class="stat-value" id="activeElections">{{ $activeElections }}</div>
                         <div class="stat-label">Active Elections</div>
                     </div>
                 </div>
@@ -1154,7 +1203,38 @@
                                 </tr>
                             </thead>
                             <tbody id="votersTableBody">
-                                <!-- Data will be loaded via AJAX -->
+                                @if(isset($voters) && $voters->count() > 0)
+                                    @foreach($voters as $voter)
+                                        <tr>
+                                            <td>#{{ $voter->id }}</td>
+                                            <td>{{ $voter->name }}</td>
+                                            <td>{{ $voter->email }}</td>
+                                            <td><span class="status-badge status-{{ strtolower($voter->blocked_at ? 'blocked' : ($voter->email_verified_at ? 'verified' : 'pending')) }}">{{ $voter->blocked_at ? 'Blocked' : ($voter->email_verified_at ? 'Verified' : 'Pending') }}</span></td>
+                                            <td><span class="status-badge status-{{ $voter->email_verified_at ? 'verified' : 'pending' }}">{{ $voter->email_verified_at ? 'Yes' : 'No' }}</span></td>
+                                            <td><span class="status-badge status-active">No</span></td>
+                                            <td>{{ $voter->last_login_at ? $voter->last_login_at->format('Y-m-d H:i') : 'Never' }}</td>
+                                            <td>
+                                                @if(!$voter->email_verified_at)
+                                                    <button class="action-btn btn-approve" onclick="approveVoter({{ $voter->id }})">Approve</button>
+                                                @endif
+                                                <button class="action-btn btn-view" onclick="viewVoter({{ $voter->id }})">View</button>
+                                                <button class="action-btn btn-edit" onclick="editVoter({{ $voter->id }})">Edit</button>
+                                                @if($voter->blocked_at)
+                                                    <button class="action-btn btn-approve" onclick="unblockVoter({{ $voter->id }})">Unblock</button>
+                                                @else
+                                                    <button class="action-btn btn-delete" onclick="blockVoter({{ $voter->id }})">Block</button>
+                                                @endif
+                                                <button class="action-btn btn-delete" onclick="deleteVoter({{ $voter->id }})">Delete</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 2rem;">
+                                            <i class="fas fa-users"></i> No voters found.
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                         <div id="loadingIndicator" style="text-align: center; padding: 2rem; display: none;">
@@ -1162,6 +1242,76 @@
                         </div>
                         <div id="noDataMessage" style="text-align: center; padding: 2rem; display: none;">
                             <i class="fas fa-users"></i> No voters found.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidates Management Section -->
+            <div id="candidates" class="dashboard-section">
+                <div class="table-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 class="chart-title">Candidates Management</h3>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <select class="form-input" id="electionFilter" style="width: 200px;">
+                                <option value="">All Elections</option>
+                                @if(isset($elections))
+                                    @foreach($elections as $election)
+                                        <option value="{{ $election->id }}">{{ $election->title }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <input type="text" class="search-input" id="candidateSearch" placeholder="Search candidates..." style="width: 250px;">
+                            <button class="action-btn btn-primary" onclick="showAddCandidateModal()">+ Add Candidate</button>
+                        </div>
+                    </div>
+                    <div id="candidatesTableContainer">
+                        <table id="candidatesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>Election</th>
+                                    <th>Position</th>
+                                    <th>Description</th>
+                                    <th>Votes</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidatesTableBody">
+                                @if(isset($candidates) && $candidates->count() > 0)
+                                    @foreach($candidates as $candidate)
+                                        <tr>
+                                            <td>#{{ $candidate->id }}</td>
+                                            <td><img src="{{ asset($candidate->photo_url) }}" alt="{{ $candidate->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></td>
+                                            <td>{{ $candidate->name }}</td>
+                                            <td>{{ $candidate->election ? $candidate->election->title : 'N/A' }}</td>
+                                            <td>{{ $candidate->position ?: 'N/A' }}</td>
+                                            <td>{{ $candidate->vote_count }}</td>
+                                            <td><span class="status-badge status-active">Active</span></td>
+                                            <td>
+                                                <button class="action-btn btn-view" onclick="viewCandidate({{ $candidate->id }})">View</button>
+                                                <button class="action-btn btn-edit" onclick="editCandidate({{ $candidate->id }})">Edit</button>
+                                                <button class="action-btn btn-delete" onclick="deleteCandidate({{ $candidate->id }})">Delete</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 2rem;">
+                                            <i class="fas fa-user-tie"></i> No candidates found.
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                        <div id="candidatesLoadingIndicator" style="text-align: center; padding: 2rem; display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading candidates...
+                        </div>
+                        <div id="candidatesNoDataMessage" style="text-align: center; padding: 2rem; display: none;">
+                            <i class="fas fa-user-tie"></i> No candidates found.
                         </div>
                     </div>
                 </div>
@@ -1273,7 +1423,7 @@
                                     <th>Status</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
-                                    <th>Votes</th>
+                                    <th>Total Votes</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -1370,8 +1520,8 @@
                                 <textarea class="form-input" id="electionDescription" rows="2" placeholder="Brief description"></textarea>
                             </div>
                             <div class="form-actions">
-                                <button class="action-btn btn-secondary" onclick="showElectionSection('overview')">Cancel</button>
-                                <button class="action-btn btn-primary" onclick="saveElection()">Save Election</button>
+                                <button type="button" class="action-btn btn-secondary" onclick="showElectionSection('overview')">Cancel</button>
+                                <button type="button" class="action-btn btn-primary" onclick="saveElection()">Save Election</button>
                             </div>
                         </div>
                     </div>
@@ -1379,21 +1529,20 @@
 
                 <!-- Management Section (Combined Candidates, Voters, Results) -->
                 <div id="election-manage" class="election-section">
+                    <div style="margin-bottom: 2rem;">
+                        <label class="form-label">Select Election:</label>
+                        <select class="form-input" id="manageElectionSelect" onchange="loadCandidatesForManagement()">
+                            <option value="">Choose an election...</option>
+                        </select>
+                    </div>
+
                     <div class="manage-grid">
                         <div class="card">
                             <div class="card-header">
                                 <div class="card-title">Candidates</div>
                             </div>
-                            <div class="manage-content">
-                                <div class="manage-item">
-                                    <span>John Smith - President</span>
-                                    <span class="status-badge status-active">Active</span>
-                                </div>
-                                <div class="manage-item">
-                                    <span>Jane Doe - President</span>
-                                    <span class="status-badge status-active">Active</span>
-                                </div>
-                                <button class="action-btn btn-primary" onclick="addCandidate()" style="margin-top: 1rem;">Add Candidate</button>
+                            <div class="manage-content" id="candidatesList">
+                                <p style="color: #666; text-align: center;">Select an election to manage candidates</p>
                             </div>
                         </div>
                         <div class="card">
@@ -1521,13 +1670,36 @@
                 </div>
             </div>
 
-            <div id="settings" class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">System Settings</div>
+            <!-- Completed Elections Section -->
+            <div id="completed" class="dashboard-section">
+                <div class="table-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 class="chart-title">Completed Elections</h3>
+                        <input type="text" class="search-input" id="completedSearch" placeholder="Search completed elections...">
                     </div>
-                    <div class="card-value">Coming Soon</div>
-                    <div class="card-change">This section is under development</div>
+                    <div id="completedTableContainer">
+                        <table id="completedTable">
+                            <thead>
+                                <tr>
+                                    <th>Election Name</th>
+                                    <th>Type</th>
+                                    <th>End Date</th>
+                                    <th>Total Votes</th>
+                                    <th>Winner</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="completedTableBody">
+                                <!-- Data will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+                        <div id="completedLoadingIndicator" style="text-align: center; padding: 2rem; display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading completed elections...
+                        </div>
+                        <div id="completedNoDataMessage" style="text-align: center; padding: 2rem; display: none;">
+                            <i class="fas fa-check-circle"></i> No completed elections found.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1554,8 +1726,13 @@
                 // Load data for specific sections
                 if (sectionId === 'voters') {
                     loadVoters();
+                } else if (sectionId === 'candidates') {
+                    loadCandidates();
+                    loadElectionsForFilter();
                 } else if (sectionId === 'elections') {
                     loadElections();
+                } else if (sectionId === 'completed') {
+                    loadCompletedElections();
                 }
             }
 
@@ -1567,11 +1744,13 @@
                 'overview': 'Dashboard Overview',
                 'results': 'Live Election Results',
                 'voters': 'Voter Management',
+                'candidates': 'Candidates Management',
                 'elections': 'Election Management',
                 'ai-alerts': 'AI Fraud Detection',
                 'audit': 'Audit Logs',
                 'monitoring': 'System Monitoring',
                 'reports': 'Reports & Analytics',
+                'completed': 'Completed Elections',
                 'settings': 'System Settings'
             };
             document.getElementById('pageTitle').textContent = titles[sectionId] || 'Dashboard';
@@ -1892,19 +2071,22 @@
                 selectedSection.classList.add('active-election-section');
             }
 
-            // Add active class to clicked tab
-            event.currentTarget.classList.add('active');
+            // Find and activate the corresponding tab
+            const tab = document.querySelector(`.election-tab[onclick*="showElectionSection('${sectionId}')"]`);
+            if (tab) {
+                tab.classList.add('active');
+            }
         }
 
         // Load elections from database
         async function loadElections() {
             console.log('loadElections function called');
             try {
-                // Use debug route temporarily to bypass authentication issues
-                const response = await fetch('/admin/debug/elections', {
+                const response = await fetch('/admin/elections', {
                     method: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
 
@@ -1931,11 +2113,11 @@
         async function loadElectionStats() {
             console.log('loadElectionStats function called');
             try {
-                // Use debug route temporarily to bypass authentication issues
-                const response = await fetch('/admin/debug/elections-stats', {
+                const response = await fetch('/admin/elections-stats', {
                     method: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
 
@@ -2001,13 +2183,108 @@
 
         // Election action functions
         function viewElection(id) {
-            // For now, just show notification. Could be expanded to show detailed modal
-            showNotification(`Viewing election details for ID: ${id}`, 'info');
+            // Fetch election data and show in modal
+            fetch(`/admin/elections/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const election = data.data;
+
+                    // Format dates
+                    const startDate = new Date(election.start_date).toLocaleString();
+                    const endDate = new Date(election.end_date).toLocaleString();
+                    const createdDate = new Date(election.created_at).toLocaleString();
+                    const updatedDate = new Date(election.updated_at).toLocaleString();
+
+                    // Determine status color
+                    const statusClass = `status-${election.status}`;
+
+                    // Create and show view modal
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal" style="max-width: 600px;">
+                            <div class="modal-title">Election Details</div>
+                            <div class="modal-content">
+                                <div style="display: grid; gap: 1.5rem;">
+                                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                                        <h2 style="margin: 0; color: #2c3e50; font-size: 1.5rem;">${election.title}</h2>
+                                        <div style="margin-top: 0.5rem;">
+                                            <span class="status-badge ${statusClass}" style="font-size: 0.9rem;">${election.status.charAt(0).toUpperCase() + election.status.slice(1)}</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div>
+                                            <strong>Type:</strong><br>
+                                            ${election.type.charAt(0).toUpperCase() + election.type.slice(1)} Position
+                                        </div>
+                                        <div>
+                                            <strong>Total Votes:</strong><br>
+                                            ${election.total_votes || 0}
+                                        </div>
+                                        <div>
+                                            <strong>Start Date:</strong><br>
+                                            ${startDate}
+                                        </div>
+                                        <div>
+                                            <strong>End Date:</strong><br>
+                                            ${endDate}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <strong>Description:</strong><br>
+                                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                                            ${election.description || 'No description provided'}
+                                        </div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                        <div>
+                                            <strong>Created:</strong><br>
+                                            ${createdDate}
+                                        </div>
+                                        <div>
+                                            <strong>Last Updated:</strong><br>
+                                            ${updatedDate}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="modal-btn cancel" onclick="this.closest('.modal-overlay').remove()">Close</button>
+                                <button class="modal-btn logout" onclick="editElection(${election.id}); this.closest('.modal-overlay').remove()">Edit Election</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    modal.classList.add('active');
+                } else {
+                    showNotification('Failed to load election details', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Failed to load election details', 'error');
+            });
         }
 
         function editElection(id) {
             // Fetch election data and populate form
-            fetch(`/admin/debug/elections/${id}`)
+            fetch(`/admin/elections/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -2035,11 +2312,11 @@
 
         function closeElection(id) {
             if (confirm('Are you sure you want to close this election?')) {
-                // Use debug route temporarily to bypass authentication issues
-                fetch(`/admin/debug/elections/${id}/close`, {
+                fetch(`/admin/elections/${id}/close`, {
                     method: 'PATCH',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
                 .then(response => response.json())
@@ -2060,11 +2337,11 @@
 
         function activateElection(id) {
             if (confirm('Are you sure you want to activate this election?')) {
-                // Use debug route temporarily to bypass authentication issues
-                fetch(`/admin/debug/elections/${id}/activate`, {
+                fetch(`/admin/elections/${id}/activate`, {
                     method: 'PATCH',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
                 .then(response => response.json())
@@ -2092,11 +2369,11 @@
 
         function deleteElection(id) {
             if (confirm('Are you sure you want to delete this election? This action cannot be undone.')) {
-                // Use debug route temporarily to bypass authentication issues
-                fetch(`/admin/debug/elections/${id}`, {
+                fetch(`/admin/elections/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
                 .then(response => response.json())
@@ -2123,51 +2400,688 @@
             const description = document.getElementById('electionDescription').value;
             const electionId = document.getElementById('electionForm').getAttribute('data-election-id');
 
+            // Frontend validation
             if (!title.trim()) {
                 showNotification('Please enter an election title', 'error');
                 return;
             }
 
-            const electionData = {
-                title: title,
-                type: type,
-                start_date: startDate,
-                end_date: endDate,
-                description: description
-            };
+            if (!startDate) {
+                showNotification('Please select a start date and time', 'error');
+                return;
+            }
 
-            // Use debug route temporarily to bypass authentication issues
-            const url = electionId ? `/admin/debug/elections/${electionId}` : '/admin/debug/elections';
-            const method = electionId ? 'PUT' : 'POST';
+            if (!endDate) {
+                showNotification('Please select an end date and time', 'error');
+                return;
+            }
+
+            // Check if end date is after start date
+            const startDateTime = new Date(startDate);
+            const endDateTime = new Date(endDate);
+
+            if (endDateTime <= startDateTime) {
+                showNotification('End date must be after start date', 'error');
+                return;
+            }
+
+            // Use FormData instead of JSON for better Laravel compatibility
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('type', type);
+            formData.append('start_date', startDate);
+            formData.append('end_date', endDate);
+            formData.append('description', description);
+
+            // Add CSRF token
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+            const url = electionId ? `/admin/elections/${electionId}` : '/admin/elections';
+            const method = 'POST';
+
+            // For updates, add _method to simulate PUT
+            if (electionId) {
+                formData.append('_method', 'PUT');
+            }
 
             fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    // Don't set Content-Type for FormData, let browser set it with boundary
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify(electionData)
+                body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // If not JSON, it's probably an error page
+                    return response.text().then(text => {
+                        throw new Error('Server returned HTML instead of JSON: ' + text.substring(0, 200));
+                    });
+                }
+            })
             .then(data => {
                 if (data.success) {
                     showNotification(data.message, 'success');
-                    // Clear form
-                    document.getElementById('electionForm').reset();
+                    // Clear form fields individually since it's not a real form element
+                    document.getElementById('electionTitle').value = '';
+                    document.getElementById('electionType').value = 'single';
+                    document.getElementById('electionStart').value = '';
+                    document.getElementById('electionEnd').value = '';
+                    document.getElementById('electionDescription').value = '';
                     document.getElementById('electionForm').removeAttribute('data-election-id');
                     showElectionSection('overview');
-                    loadElections(); // Reload the elections list
+                    // Reload elections with a small delay to ensure UI updates
+                    setTimeout(() => {
+                        loadElections();
+                    }, 100);
                 } else {
-                    showNotification(data.message || 'Failed to save election', 'error');
+                    // Show validation errors if present
+                    if (data.errors) {
+                        const errorMessages = Object.values(data.errors).flat().join(', ');
+                        showNotification('Validation failed: ' + errorMessages, 'error');
+                    } else {
+                        showNotification(data.message || 'Failed to save election', 'error');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Failed to save election', 'error');
+                showNotification('Failed to save election: ' + error.message, 'error');
             });
         }
 
-        function addCandidate() {
-            showNotification('Add candidate functionality would open a modal', 'info');
+        // Load elections for management dropdown
+        async function loadElectionsForManagement() {
+            try {
+                const response = await fetch('/admin/elections', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+                const select = document.getElementById('manageElectionSelect');
+
+                if (data.success) {
+                    select.innerHTML = '<option value="">Choose an election...</option>';
+                    data.data.forEach(election => {
+                        select.innerHTML += `<option value="${election.id}">${election.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading elections:', error);
+            }
+        }
+
+        // Load candidates for selected election
+        async function loadCandidatesForManagement() {
+            const electionId = document.getElementById('manageElectionSelect').value;
+            const candidatesList = document.getElementById('candidatesList');
+
+            if (!electionId) {
+                candidatesList.innerHTML = '<p style="color: #666; text-align: center;">Select an election to manage candidates</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/candidates?election_id=${electionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let html = '';
+                    data.data.forEach(candidate => {
+                        html += `
+                            <div class="manage-item">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <img src="${candidate.photo_url ? candidate.photo_url : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(candidate.name) + '&background=3498db&color=fff&size=40'}" alt="${candidate.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    <div>
+                                        <strong>${candidate.name}</strong>
+                                        <div style="color: #666; font-size: 0.9rem;">${candidate.description || 'No description'}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="action-btn btn-edit" onclick="editCandidate(${candidate.id})">Edit</button>
+                                    <button class="action-btn btn-delete" onclick="deleteCandidate(${candidate.id})">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `<button class="action-btn btn-primary" onclick="addCandidate(${electionId})" style="margin-top: 1rem;">Add Candidate</button>`;
+                    candidatesList.innerHTML = html;
+                } else {
+                    candidatesList.innerHTML = '<p style="color: #e74c3c; text-align: center;">Error loading candidates</p>';
+                }
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                candidatesList.innerHTML = '<p style="color: #e74c3c; text-align: center;">Error loading candidates</p>';
+            }
+        }
+
+        // Load candidates for candidates management section
+        async function loadCandidates(searchTerm = '', electionId = '') {
+            console.log('loadCandidates called with searchTerm:', searchTerm, 'electionId:', electionId);
+            const tableBody = document.getElementById('candidatesTableBody');
+            const loadingIndicator = document.getElementById('candidatesLoadingIndicator');
+            const noDataMessage = document.getElementById('candidatesNoDataMessage');
+
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            try {
+                let url = '/admin/api/candidates?';
+                if (searchTerm) url += `search=${encodeURIComponent(searchTerm)}&`;
+                if (electionId) url += `election_id=${electionId}&`;
+                url = url.slice(0, -1); // Remove trailing &
+
+                console.log('Fetching URL:', url);
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    credentials: 'include'
+                });
+
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success && data.data.length > 0) {
+                    console.log('Data length:', data.data.length);
+                    data.data.forEach(candidate => {
+                        const row = document.createElement('tr');
+                        const photoUrl = candidate.photo_url ? candidate.photo_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=3498db&color=fff&size=40`;
+
+                        row.innerHTML = `
+                            <td>#${candidate.id}</td>
+                            <td><img src="${photoUrl}" alt="${candidate.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></td>
+                            <td>${candidate.name}</td>
+                            <td>${candidate.election ? candidate.election.title : 'N/A'}</td>
+                            <td>${candidate.position || 'N/A'}</td>
+                            <td>${candidate.description || 'No description'}</td>
+                            <td>${candidate.votes || 0}</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <button class="action-btn btn-view" onclick="viewCandidate(${candidate.id})">View</button>
+                                <button class="action-btn btn-edit" onclick="editCandidate(${candidate.id})">Edit</button>
+                                <button class="action-btn btn-delete" onclick="deleteCandidate(${candidate.id})">Delete</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    noDataMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                showNotification('Failed to load candidates. Please try again.', 'error');
+                noDataMessage.style.display = 'block';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        // Load elections for filter dropdown
+        async function loadElectionsForFilter() {
+            try {
+                const response = await fetch('/admin/elections', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+                const select = document.getElementById('electionFilter');
+
+                if (data.success) {
+                    select.innerHTML = '<option value="">All Elections</option>';
+                    data.data.forEach(election => {
+                        select.innerHTML += `<option value="${election.id}">${election.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading elections for filter:', error);
+            }
+        }
+
+        // Search functionality for candidates with debouncing
+        let candidateSearchTimeout;
+        document.getElementById('candidateSearch').addEventListener('input', function(e) {
+            clearTimeout(candidateSearchTimeout);
+            const searchTerm = e.target.value.trim();
+            const electionId = document.getElementById('electionFilter').value;
+
+            candidateSearchTimeout = setTimeout(() => {
+                loadCandidates(searchTerm, electionId);
+            }, 300); // 300ms debounce
+        });
+
+        // Election filter change
+        document.getElementById('electionFilter').addEventListener('change', function(e) {
+            const electionId = e.target.value;
+            const searchTerm = document.getElementById('candidateSearch').value.trim();
+            loadCandidates(searchTerm, electionId);
+        });
+
+        // View candidate details
+        async function viewCandidate(id) {
+            try {
+                const response = await fetch(`/admin/candidates/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const candidate = data.data;
+                    const photoUrl = candidate.photo_url ? candidate.photo_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=3498db&color=fff&size=100`;
+
+                    // Create and show view modal
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal" style="max-width: 500px;">
+                            <div class="modal-title">Candidate Details</div>
+                            <div class="modal-content">
+                                <div style="text-align: center; margin-bottom: 2rem;">
+                                    <img src="${photoUrl}" alt="${candidate.name}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                                    <h3 style="margin: 0; color: #2c3e50;">${candidate.name}</h3>
+                                </div>
+                                <div style="display: grid; gap: 1rem;">
+                                    <div><strong>Election:</strong> ${candidate.election ? candidate.election.title : 'N/A'}</div>
+                                    <div><strong>Description:</strong> ${candidate.description || 'No description'}</div>
+                                    <div><strong>Votes:</strong> ${candidate.votes || 0}</div>
+                                    <div><strong>Status:</strong> <span class="status-badge status-active">Active</span></div>
+                                    <div><strong>Created:</strong> ${new Date(candidate.created_at).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="modal-btn cancel" onclick="this.closest('.modal-overlay').remove()">Close</button>
+                                <button class="modal-btn logout" onclick="editCandidate(${candidate.id}); this.closest('.modal-overlay').remove()">Edit</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    modal.classList.add('active');
+                } else {
+                    showNotification('Failed to load candidate details', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading candidate:', error);
+                showNotification('Failed to load candidate details', 'error');
+            }
+        }
+
+        // Show add candidate modal
+        function showAddCandidateModal() {
+            // Create and show add modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal" style="max-width: 500px;">
+                    <div class="modal-title">Add New Candidate</div>
+                    <div class="modal-content">
+                        <form id="addCandidateForm" enctype="multipart/form-data">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Election *</label>
+                                <select name="election_id" id="addElectionId" class="form-input" required style="width: 100%;">
+                                    <option value="">Select Election</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Name *</label>
+                                <input type="text" name="name" id="addCandidateName" class="form-input" required style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                                <textarea name="description" id="addCandidateDescription" class="form-input" rows="3" style="width: 100%;"></textarea>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Photo</label>
+                                <input type="file" name="photo" id="addCandidatePhoto" accept="image/*" style="width: 100%;">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-btn cancel" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                        <button class="modal-btn logout" onclick="submitAddCandidateForm()">Add Candidate</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.classList.add('active');
+
+            // Load elections for dropdown
+            loadElectionsForAddModal();
+        }
+
+        // Load elections for add modal
+        async function loadElectionsForAddModal() {
+            try {
+                const response = await fetch('/admin/elections', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+                const select = document.getElementById('addElectionId');
+
+                if (data.success) {
+                    select.innerHTML = '<option value="">Select Election</option>';
+                    data.data.forEach(election => {
+                        select.innerHTML += `<option value="${election.id}">${election.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading elections:', error);
+            }
+        }
+
+        // Submit add candidate form
+        async function submitAddCandidateForm() {
+            const form = document.getElementById('addCandidateForm');
+            const formData = new FormData(form);
+
+            // Check required fields using form elements directly
+            const electionSelect = document.getElementById('addElectionId');
+            const nameInput = document.getElementById('addCandidateName');
+            const electionId = electionSelect.value;
+            const name = nameInput.value.trim();
+
+            if (!electionId || !name) {
+                showNotification('Please fill in all required fields (Election and Name)', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.querySelector('.modal-btn.logout');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Adding...';
+            submitBtn.disabled = true;
+
+            // Add CSRF token to form data for multipart requests
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+            try {
+                const response = await fetch('/admin/candidates', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: formData
+                });
+
+                let data;
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    // If it's not JSON, it might be an HTML error page
+                    if (responseText.includes('<html>') || responseText.includes('<!DOCTYPE')) {
+                        throw new Error('Server returned HTML instead of JSON. Check server logs for errors.');
+                    } else {
+                        throw new Error('Invalid response from server: ' + responseText.substring(0, 100));
+                    }
+                }
+
+                if (response.ok && data.success) {
+                    showNotification('Candidate added successfully', 'success');
+                    // Update CSRF token if provided
+                    if (data.csrf_token) {
+                        document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrf_token);
+                    }
+                    document.querySelector('.modal-overlay').remove();
+                    loadCandidates(); // Reload the candidates list
+                } else {
+                    // Handle validation errors
+                    if (data.errors) {
+                        const errorMessages = Object.values(data.errors).flat().join(', ');
+                        showNotification('Validation failed: ' + errorMessages, 'error');
+                    } else {
+                        showNotification(data.message || 'Failed to add candidate', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding candidate:', error);
+                showNotification('Failed to add candidate: ' + error.message, 'error');
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Add new candidate
+        function addCandidate(electionId) {
+            const name = prompt('Enter candidate name:');
+            if (!name) return;
+
+            const description = prompt('Enter candidate description:');
+            if (description === null) return; // Allow empty description
+
+            const formData = new FormData();
+            formData.append('election_id', electionId);
+            formData.append('name', name);
+            formData.append('description', description);
+
+            fetch('/admin/candidates', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Candidate added successfully', 'success');
+                    loadCandidatesForManagement();
+                } else {
+                    showNotification('Failed to add candidate', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Failed to add candidate', 'error');
+            });
+        }
+
+        // Edit candidate
+        async function editCandidate(candidateId) {
+            try {
+                // First, fetch current candidate data
+                const response = await fetch(`/admin/candidates/${candidateId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const candidate = data.data;
+
+                    // Create and show edit modal
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal" style="max-width: 500px;">
+                            <div class="modal-title">Edit Candidate</div>
+                            <div class="modal-content">
+                                <form id="editCandidateForm" enctype="multipart/form-data">
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Election *</label>
+                                        <select name="election_id" id="editElectionId" class="form-input" required style="width: 100%;">
+                                            <option value="">Select Election</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Name *</label>
+                                        <input type="text" name="name" id="editCandidateName" class="form-input" required style="width: 100%;" value="${candidate.name}">
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                                        <textarea name="description" id="editCandidateDescription" class="form-input" rows="3" style="width: 100%;">${candidate.description || ''}</textarea>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Photo</label>
+                                        <input type="file" name="photo" id="editCandidatePhoto" accept="image/*" style="width: 100%;">
+                                        <small style="color: #666;">Leave empty to keep current photo</small>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="modal-btn cancel" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                                <button class="modal-btn logout" onclick="submitEditCandidateForm(${candidateId})">Update Candidate</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    modal.classList.add('active');
+
+                    // Load elections for dropdown and set current election
+                    await loadElectionsForEditModal(candidate.election_id);
+                } else {
+                    showNotification('Failed to load candidate data', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading candidate:', error);
+                showNotification('Failed to load candidate data', 'error');
+            }
+        }
+
+        // Load elections for edit modal
+        async function loadElectionsForEditModal(currentElectionId) {
+            try {
+                const response = await fetch('/admin/elections', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+                const select = document.getElementById('editElectionId');
+
+                if (data.success) {
+                    select.innerHTML = '<option value="">Select Election</option>';
+                    data.data.forEach(election => {
+                        const selected = election.id == currentElectionId ? 'selected' : '';
+                        select.innerHTML += `<option value="${election.id}" ${selected}>${election.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading elections:', error);
+            }
+        }
+
+        // Submit edit candidate form
+        async function submitEditCandidateForm(candidateId) {
+            const form = document.getElementById('editCandidateForm');
+            const formData = new FormData(form);
+
+            if (!formData.get('election_id') || !formData.get('name')) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            formData.append('_method', 'PUT');
+
+            try {
+                const response = await fetch(`/admin/candidates/${candidateId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Candidate updated successfully', 'success');
+                    document.querySelector('.modal-overlay').remove();
+                    loadCandidates(); // Reload the candidates list
+                } else {
+                    showNotification(data.message || 'Failed to update candidate', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating candidate:', error);
+                showNotification('Failed to update candidate', 'error');
+            }
+        }
+
+        // Delete candidate
+        function deleteCandidate(candidateId) {
+            if (!confirm('Are you sure you want to delete this candidate?')) return;
+
+            const formData = new FormData();
+            formData.append('_method', 'DELETE');
+
+            fetch(`/admin/candidates/${candidateId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Candidate deleted successfully', 'success');
+                    // Update CSRF token if provided
+                    if (data.csrf_token) {
+                        document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrf_token);
+                    }
+                    loadCandidatesForManagement();
+                } else {
+                    showNotification('Failed to delete candidate', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Failed to delete candidate', 'error');
+            });
         }
 
         function manageVoters() {
@@ -2264,6 +3178,87 @@
                 loadVoters(searchTerm);
             }, 300); // 300ms debounce
         });
+
+        // Load completed elections
+        async function loadCompletedElections(searchTerm = '') {
+            const tableBody = document.getElementById('completedTableBody');
+            const loadingIndicator = document.getElementById('completedLoadingIndicator');
+            const noDataMessage = document.getElementById('completedNoDataMessage');
+
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            try {
+                let url = '/admin/elections?status=closed';
+                if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    data.data.forEach(election => {
+                        const row = document.createElement('tr');
+
+                        // Format dates
+                        const endDate = new Date(election.end_date).toLocaleDateString();
+
+                        // Get winner (simplified - in real app, you'd calculate this)
+                        const winner = 'Winner TBD'; // Placeholder
+
+                        row.innerHTML = `
+                            <td>${election.title}</td>
+                            <td>${election.type.charAt(0).toUpperCase() + election.type.slice(1)} Position</td>
+                            <td>${endDate}</td>
+                            <td>${election.total_votes || 0}</td>
+                            <td>${winner}</td>
+                            <td>
+                                <button class="action-btn btn-view" onclick="viewCompletedElection(${election.id})">View Results</button>
+                                <button class="action-btn btn-approve" onclick="publishResults(${election.id})">Publish</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    noDataMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading completed elections:', error);
+                showNotification('Failed to load completed elections. Please try again.', 'error');
+                noDataMessage.style.display = 'block';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        // Search functionality for completed elections
+        let completedSearchTimeout;
+        document.getElementById('completedSearch').addEventListener('input', function(e) {
+            clearTimeout(completedSearchTimeout);
+            const searchTerm = e.target.value.trim();
+
+            completedSearchTimeout = setTimeout(() => {
+                loadCompletedElections(searchTerm);
+            }, 300); // 300ms debounce
+        });
+
+        // View completed election results
+        function viewCompletedElection(id) {
+            // For now, just show notification. Could be expanded to show detailed modal
+            showNotification(`Viewing results for completed election ID: ${id}`, 'info');
+        }
 
         // Action functions
         async function approveVoter(id) {
@@ -2446,4 +3441,5 @@
         document.head.appendChild(style);
     </script>
 </body>
+</html>
 </html>

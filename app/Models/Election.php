@@ -44,6 +44,17 @@ class Election extends Model
         return $query->where('status', 'closed');
     }
 
+    // Relationships
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class);
+    }
+
     // Accessors
     public function getIsActiveAttribute()
     {

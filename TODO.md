@@ -1,5 +1,4 @@
-- [x] Update login.blade.php to two-panel layout (left: logo/features, right: form)
-- [x] Adapt features to voting system (Secure Voting, Real-time Results, etc.)
-- [x] Keep existing yellow/green color theme
-- [x] Ensure responsive design
-- [x] Test login functionality
+- [x] Update CandidateController.php store method to use move() for photo upload to public/ImageCandidate/
+- [x] Update CandidateController.php update method to use unlink() and move() for photo handling
+- [x] Update CandidateController.php destroy method to use unlink() for photo deletion
+- [x] Test adding a candidate with uploaded photo to verify display

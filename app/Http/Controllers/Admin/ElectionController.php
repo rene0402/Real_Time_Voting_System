@@ -12,9 +12,52 @@ class ElectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $elections = Election::orderBy('created_at', 'desc')->get();
+        $query = Election::query();
+
+        // Filter by status if provided
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        $elections = $query->orderBy('created_at', 'desc')->get();
+
+        // Add action buttons for each election
+        $elections->transform(function ($election) {
+            $actions = '';
+
+            // View button for all elections
+            $actions .= '<button class="action-btn btn-view" onclick="viewElection(' . $election->id . ')">View</button>';
+
+            // Edit button for scheduled and active elections
+            if (in_array($election->status, ['scheduled', 'active'])) {
+                $actions .= '<button class="action-btn btn-edit" onclick="editElection(' . $election->id . ')">Edit</button>';
+            }
+
+            // Status-specific buttons
+            switch ($election->status) {
+                case 'scheduled':
+                    $actions .= '<button class="action-btn btn-approve" onclick="activateElection(' . $election->id . ')">Activate</button>';
+                    break;
+                case 'active':
+                    $actions .= '<button class="action-btn btn-approve" onclick="closeElection(' . $election->id . ')">Close</button>';
+                    break;
+                case 'closed':
+                    $actions .= '<button class="action-btn btn-approve" onclick="publishResults(' . $election->id . ')">Publish</button>';
+                    break;
+            }
+
+            $election->actions = $actions;
+            return $election;
+        });
+
         return response()->json([
             'success' => true,
             'data' => $elections
@@ -37,8 +80,8 @@ class ElectionController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'type' => 'required|in:single,multi,referendum',
-            'start_date' => 'required|date|after:now',
-            'end_date' => 'required|date|after:start_date',
+            'start_date' => 'required|date_format:Y-m-d\TH:i|after:now',
+            'end_date' => 'required|date_format:Y-m-d\TH:i|after:start_date',
             'description' => 'nullable|string'
         ]);
 
@@ -96,8 +139,8 @@ class ElectionController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'type' => 'required|in:single,multi,referendum',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'start_date' => 'required|date_format:Y-m-d\TH:i',
+            'end_date' => 'required|date_format:Y-m-d\TH:i|after_or_equal:start_date',
             'description' => 'nullable|string'
         ]);
 
