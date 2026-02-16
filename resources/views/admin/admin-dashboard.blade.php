@@ -1560,22 +1560,10 @@
                             <div class="card-title">Voting Progress</div>
                             <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--cpsu-blue);"></i>
                         </div>
-                        <div class="card-value">71.2%</div>
-                        <div class="card-change">+2.5% from yesterday</div>
+                        <div class="card-value">{{ $votingProgress }}%</div>
+                        <div class="card-change">{{ $votesCast }} votes cast</div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: 71.2%"></div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">AI Security Alerts</div>
-                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--cpsu-red);"></i>
-                        </div>
-                        <div class="card-value">3</div>
-                        <div class="card-change negative">+1 new alert</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 30%; background: linear-gradient(90deg, var(--cpsu-red), #c0392b);"></div>
+                            <div class="progress-fill" style="width: {{ $votingProgress }}%"></div>
                         </div>
                     </div>
 
@@ -1584,10 +1572,10 @@
                             <div class="card-title">System Health</div>
                             <i class="fas fa-heartbeat" style="font-size: 2rem; color: var(--cpsu-green);"></i>
                         </div>
-                        <div class="card-value">100%</div>
-                        <div class="card-change">All systems operational</div>
+                        <div class="card-value">{{ $systemHealth['percentage'] ?? 100 }}%</div>
+                        <div class="card-change">{{ $systemHealth['label'] ?? 'Operational' }}</div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, var(--cpsu-green), #229954);"></div>
+                            <div class="progress-fill" style="width: {{ $systemHealth['percentage'] ?? 100 }}%; background: linear-gradient(90deg, var(--cpsu-green), #229954);"></div>
                         </div>
                     </div>
 
@@ -1596,10 +1584,10 @@
                             <div class="card-title">Active Users</div>
                             <i class="fas fa-user-clock" style="font-size: 2rem; color: var(--cpsu-purple);"></i>
                         </div>
-                        <div class="card-value">47</div>
-                        <div class="card-change">+12 in last hour</div>
+                        <div class="card-value">{{ $activeUsersCount }}</div>
+                        <div class="card-change">Currently active</div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%; background: linear-gradient(90deg, var(--cpsu-purple), #8e44ad);"></div>
+                            <div class="progress-fill" style="width: {{ min(100, $activeUsersCount * 2) }}%; background: linear-gradient(90deg, var(--cpsu-purple), #8e44ad);"></div>
                         </div>
                     </div>
                 </div>
@@ -2255,19 +2243,19 @@
                         </div>
                         <div class="stat-label">Server Status</div>
                     </div>
-                    
+
                     <!-- Active Users -->
                     <div class="stat-item">
                         <div class="stat-value" id="activeUsersCount">{{ $monitoringData['active_users']['count'] }}</div>
                         <div class="stat-label">Active Users (15 min)</div>
                     </div>
-                    
+
                     <!-- Votes Per Minute -->
                     <div class="stat-item">
                         <div class="stat-value" id="votesPerMinuteCount">{{ $monitoringData['votes_per_minute'] }}</div>
                         <div class="stat-label">Votes Per Minute</div>
                     </div>
-                    
+
                     <!-- Votes Today -->
                     <div class="stat-item">
                         <div class="stat-value" id="votesTodayCount">{{ number_format($monitoringData['votes_today']) }}</div>
@@ -2915,37 +2903,7 @@
             }, 5000);
         }
 
-        setInterval(() => {
-            const voterCount = document.getElementById('totalVoters');
-            if (voterCount) {
-                const currentVoters = parseInt(voterCount.textContent.replace(',', ''));
-                if (Math.random() > 0.7) {
-                    voterCount.textContent = (currentVoters + 1).toLocaleString();
-                }
-            }
-
-            const votesCast = document.getElementById('votesCast');
-            if (votesCast) {
-                const currentVotes = parseInt(votesCast.textContent.replace(',', ''));
-                if (Math.random() > 0.5) {
-                    votesCast.textContent = (currentVotes + Math.floor(Math.random() * 3)).toLocaleString();
-                }
-            }
-
-            const participationRate = document.getElementById('participationRate');
-            if (participationRate && voterCount && votesCast) {
-                const voters = parseInt(voterCount.textContent.replace(',', ''));
-                const votes = parseInt(votesCast.textContent.replace(',', ''));
-                const rate = voters > 0 ? ((votes / voters) * 100).toFixed(1) : 0;
-                participationRate.textContent = `${rate}%`;
-            }
-
-            const alertCount = document.getElementById('aiAlertCount');
-            if (alertCount && Math.random() > 0.8) {
-                const currentAlerts = parseInt(alertCount.textContent);
-                alertCount.textContent = `${Math.max(0, currentAlerts + (Math.random() > 0.5 ? 1 : -1))} AI Alerts`;
-            }
-        }, 5000);
+        // Live counter updates removed - dashboard now shows static values from server-side rendering
 
         // [CONTINUING WITH ALL OTHER EXISTING JAVASCRIPT FUNCTIONS FROM THE ORIGINAL FILE]
         // Election Management Functions, Load functions, etc. all remain exactly the same
@@ -4295,7 +4253,7 @@
                 'vote_submission': 'Vote Timestamps',
                 'system_change': 'System Changes'
             };
-            
+
             showNotification(`Showing ${tabNames[tabType] || 'All Logs'}`, 'info');
         }
 
@@ -4303,20 +4261,20 @@
             const searchTerm = document.getElementById('auditSearch').value.toLowerCase();
             const dateFrom = document.getElementById('auditDateFrom').value;
             const dateTo = document.getElementById('auditDateTo').value;
-            
+
             const rows = document.querySelectorAll('#auditLogsTableBody tr');
-            
+
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 const rowDateCell = row.querySelector('td:first-child');
                 const rowDate = rowDateCell ? rowDateCell.textContent : '';
-                
+
                 let showRow = true;
-                
+
                 if (searchTerm && !text.includes(searchTerm)) {
                     showRow = false;
                 }
-                
+
                 if (dateFrom || dateTo) {
                     const rowDateObj = new Date(rowDate);
                     if (dateFrom && rowDateObj < new Date(dateFrom)) {
@@ -4326,24 +4284,24 @@
                         showRow = false;
                     }
                 }
-                
+
                 row.style.display = showRow ? '' : 'none';
             });
-            
+
             const visibleCount = document.querySelectorAll('#auditLogsTableBody tr:not([style*="display: none"])').length;
             showNotification(`Found ${visibleCount} matching logs`, 'info');
         }
 
         function exportAuditLogs() {
             const rows = Array.from(document.querySelectorAll('#auditLogsTableBody tr')).filter(row => row.style.display !== 'none');
-            
+
             if (rows.length === 0) {
                 showNotification('No logs to export', 'error');
                 return;
             }
-            
+
             let csvContent = 'Date/Time,User,Action Type,Category,Description,IP Address\n';
-            
+
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 if (cells.length >= 6) {
@@ -4353,24 +4311,24 @@
                     const category = cells[3].textContent.trim();
                     const description = cells[4].textContent.trim().replace(/"/g, '""');
                     const ipAddress = cells[5].textContent.trim();
-                    
+
                     csvContent += `"${dateTime}","${user}","${actionType}","${category}","${description}","${ipAddress}"\n`;
                 }
             });
-            
+
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
-            
+
             const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
             link.setAttribute('href', url);
             link.setAttribute('download', `audit_logs_${timestamp}.csv`);
             link.style.visibility = 'hidden';
-            
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             showNotification(`Exported ${rows.length} audit logs to CSV`, 'success');
         }
 
@@ -4378,19 +4336,19 @@
 
         // System Monitoring JavaScript
         let monitoringChart;
-        
+
         // Initialize monitoring chart
         function initMonitoringChart(hourlyData) {
             const ctx = document.getElementById('monitoringChart');
             if (!ctx) return;
-            
+
             const hours = [];
             const labels = [];
             for (let i = 0; i < 24; i++) {
                 hours.push(hourlyData[i] || 0);
                 labels.push(i + ':00');
             }
-            
+
             monitoringChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -4434,7 +4392,7 @@
                 }
             });
         }
-        
+
         // Fetch real-time monitoring data
         async function fetchMonitoringData() {
             try {
@@ -4445,9 +4403,9 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     updateMonitoringUI(data.data);
                 }
@@ -4455,7 +4413,7 @@
                 console.error('Error fetching monitoring data:', error);
             }
         }
-        
+
         // Update monitoring UI with new data
         function updateMonitoringUI(data) {
             // Update server status
@@ -4465,65 +4423,65 @@
                 statusIndicator.className = 'status-dot ' + (data.server_status.status === 'online' ? 'online' : 'offline');
                 statusText.textContent = data.server_status.label;
             }
-            
+
             // Update active users
             const activeUsers = document.getElementById('activeUsersCount');
             if (activeUsers) {
                 activeUsers.textContent = data.active_users.count;
             }
-            
+
             // Update votes per minute
             const votesPerMinute = document.getElementById('votesPerMinuteCount');
             if (votesPerMinute) {
                 votesPerMinute.textContent = data.votes_per_minute;
             }
-            
+
             // Update votes today
             const votesToday = document.getElementById('votesTodayCount');
             if (votesToday) {
                 votesToday.textContent = data.votes_today.toLocaleString();
             }
-            
+
             // Update peak time
             const peakTime = document.getElementById('peakTime');
             if (peakTime) {
                 peakTime.textContent = data.peak_voting_times.peak_label;
             }
-            
+
             // Update average votes per hour
             const avgVotes = document.getElementById('avgVotesPerHour');
             if (avgVotes) {
                 avgVotes.textContent = data.avg_votes_per_hour;
             }
-            
+
             // Update chart if it exists
             if (monitoringChart && data.peak_voting_times.hourly) {
                 monitoringChart.data.datasets[0].data = data.peak_voting_times.hourly;
                 monitoringChart.update();
             }
         }
-        
+
         // Initialize monitoring on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize chart with initial data from server-side rendering
             const initialHourlyData = @json($monitoringData['peak_voting_times']['hourly'] ?? array_fill(0, 24, 0));
             initMonitoringChart(initialHourlyData);
-            
+
             // Start polling for real-time updates (every 5 seconds)
             setInterval(fetchMonitoringData, 5000);
-            
+
             // Load initial report data when reports section is shown
             loadReportData();
         });
 
         // ==================== REPORTS & ANALYTICS FUNCTIONS ====================
-        
+
         // Chart instances for Reports
         let turnoutChart, turnoutPieChart, resultsComparisonChart, aiHourlyChart, aiDailyChart, cumulativeChart, heatmapChart;
-        
+
         // Current report tab
         let currentReportTab = 'turnout';
-        
+
         // Show report tab
         function showReportTab(tabName) {
             // Update tab active state
@@ -4531,12 +4489,12 @@
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
-            
+
             // Hide all report tabs
             document.querySelectorAll('.report-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Show selected tab
             const tabMap = {
                 'turnout': 'report-turnout',
@@ -4544,7 +4502,7 @@
                 'ai-patterns': 'report-ai-patterns',
                 'time-based': 'report-time-based'
             };
-            
+
             const tabId = tabMap[tabName];
             if (tabId) {
                 document.getElementById(tabId).classList.add('active');
@@ -4552,13 +4510,13 @@
                 loadReportData();
             }
         }
-        
+
         // Load report data based on current filters
         async function loadReportData() {
             const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
             const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
             const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
-            
+
             switch(currentReportTab) {
                 case 'turnout':
                     await loadVoterTurnoutReport(electionId, dateRange);
@@ -4574,7 +4532,7 @@
                     break;
             }
         }
-        
+
         // Load Voter Turnout Report
         async function loadVoterTurnoutReport(electionId, days) {
             try {
@@ -4582,7 +4540,7 @@
                 if (electionId) {
                     url += `&election_id=${electionId}`;
                 }
-                
+
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -4590,22 +4548,22 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Update summary stats
                     const summary = result.summary;
                     document.getElementById('totalRegisteredVoters').textContent = summary.total_voters.toLocaleString();
                     document.getElementById('totalVotesCast').textContent = summary.total_votes.toLocaleString();
                     document.getElementById('overallTurnout').textContent = summary.overall_turnout + '%';
-                    
+
                     // Calculate average turnout
-                    const avgTurnout = result.data.length > 0 
+                    const avgTurnout = result.data.length > 0
                         ? (result.data.reduce((sum, e) => sum + e.turnout_rate, 0) / result.data.length).toFixed(1)
                         : 0;
                     document.getElementById('avgTurnout').textContent = avgTurnout + '%';
-                    
+
                     // Update table
                     const tableBody = document.getElementById('turnoutTableBody');
                     if (result.data.length > 0) {
@@ -4622,7 +4580,7 @@
                     } else {
                         tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No data available</td></tr>';
                     }
-                    
+
                     // Update charts
                     updateTurnoutCharts(result.data);
                 }
@@ -4631,14 +4589,14 @@
                 showNotification('Failed to load voter turnout data', 'error');
             }
         }
-        
+
         // Update turnout charts
         function updateTurnoutCharts(data) {
             // Bar chart - Turnout by Election
             const ctx1 = document.getElementById('turnoutChart');
             if (ctx1) {
                 if (turnoutChart) turnoutChart.destroy();
-                
+
                 turnoutChart = new Chart(ctx1, {
                     type: 'bar',
                     data: {
@@ -4671,16 +4629,16 @@
                     }
                 });
             }
-            
+
             // Pie chart - Turnout distribution
             const ctx2 = document.getElementById('turnoutPieChart');
             if (ctx2) {
                 if (turnoutPieChart) turnoutPieChart.destroy();
-                
+
                 const highTurnout = data.filter(e => e.turnout_rate >= 70).length;
                 const medTurnout = data.filter(e => e.turnout_rate >= 40 && e.turnout_rate < 70).length;
                 const lowTurnout = data.filter(e => e.turnout_rate < 40).length;
-                
+
                 turnoutPieChart = new Chart(ctx2, {
                     type: 'doughnut',
                     data: {
@@ -4709,7 +4667,7 @@
                 });
             }
         }
-        
+
         // Load Election Results Report
         async function loadElectionResultsReport(electionId) {
             try {
@@ -4717,7 +4675,7 @@
                 if (electionId) {
                     url += `?election_id=${electionId}`;
                 }
-                
+
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -4725,9 +4683,9 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Update table
                     const tableBody = document.getElementById('resultsTableBody');
@@ -4752,7 +4710,7 @@
                     } else {
                         tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No data available</td></tr>';
                     }
-                    
+
                     // Update chart
                     updateResultsChart(result.data);
                 }
@@ -4761,14 +4719,14 @@
                 showNotification('Failed to load election results data', 'error');
             }
         }
-        
+
         // Update results comparison chart
         function updateResultsChart(data) {
             const ctx = document.getElementById('resultsComparisonChart');
             if (!ctx) return;
-            
+
             if (resultsComparisonChart) resultsComparisonChart.destroy();
-            
+
             // Get all candidates from all elections
             const allCandidates = [];
             data.forEach(election => {
@@ -4779,12 +4737,12 @@
                     });
                 });
             });
-            
+
             // Sort by votes and take top 10
             const topCandidates = allCandidates
                 .sort((a, b) => b.votes - a.votes)
                 .slice(0, 10);
-            
+
             resultsComparisonChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -4828,12 +4786,12 @@
                 }
             });
         }
-        
+
         // Load AI Patterns Report
         async function loadAIPatternsReport(days) {
             try {
                 const url = `/admin/api/reports/ai-patterns?days=${days}`;
-                
+
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -4841,18 +4799,18 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const data = result.data;
-                    
+
                     // Update stats
                     document.getElementById('aiTotalVotes').textContent = data.total_votes.toLocaleString();
                     document.getElementById('aiUniqueVoters').textContent = data.unique_voters.toLocaleString();
                     document.getElementById('aiPeakHour').textContent = data.peak_hour_label;
                     document.getElementById('aiAvgPerHour').textContent = data.avg_votes_per_hour;
-                    
+
                     // Update anomalies table
                     const anomaliesBody = document.getElementById('anomaliesTableBody');
                     if (data.anomalies && data.anomalies.length > 0) {
@@ -4872,7 +4830,7 @@
                     } else {
                         anomaliesBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No anomalies detected</td></tr>';
                     }
-                    
+
                     // Update charts
                     updateAICharts(data);
                 }
@@ -4881,19 +4839,19 @@
                 showNotification('Failed to load AI patterns data', 'error');
             }
         }
-        
+
         // Update AI charts
         function updateAICharts(data) {
             // Hourly activity chart
             const ctx1 = document.getElementById('aiHourlyChart');
             if (ctx1) {
                 if (aiHourlyChart) aiHourlyChart.destroy();
-                
+
                 const labels = [];
                 for (let i = 0; i < 24; i++) {
                     labels.push(i + ':00');
                 }
-                
+
                 aiHourlyChart = new Chart(ctx1, {
                     type: 'line',
                     data: {
@@ -4932,15 +4890,15 @@
                     }
                 });
             }
-            
+
             // Daily trends chart
             const ctx2 = document.getElementById('aiDailyChart');
             if (ctx2) {
                 if (aiDailyChart) aiDailyChart.destroy();
-                
+
                 const labels = data.votes_by_day.map(d => d.date);
                 const values = data.votes_by_day.map(d => d.count);
-                
+
                 aiDailyChart = new Chart(ctx2, {
                     type: 'bar',
                     data: {
@@ -4973,7 +4931,7 @@
                 });
             }
         }
-        
+
         // Load Time-Based Report
         async function loadTimeBasedReport(electionId, days) {
             try {
@@ -4981,7 +4939,7 @@
                 if (electionId) {
                     url += `&election_id=${electionId}`;
                 }
-                
+
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -4989,28 +4947,28 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const data = result.data;
-                    
+
                     // Update stats
                     document.getElementById('timeTotalVotes').textContent = data.total_votes.toLocaleString();
                     document.getElementById('timeDaysAnalyzed').textContent = data.days_analyzed;
-                    
-                    const changeText = data.comparison.change >= 0 
-                        ? `+${data.comparison.change}%` 
+
+                    const changeText = data.comparison.change >= 0
+                        ? `+${data.comparison.change}%`
                         : `${data.comparison.change}%`;
                     const changeElement = document.getElementById('timeChangePercent');
                     changeElement.textContent = changeText;
                     changeElement.style.color = data.comparison.change >= 0 ? '#28a745' : '#dc3545';
-                    
-                    const avgDaily = data.days_analyzed > 0 
-                        ? Math.round(data.total_votes / data.days_analyzed) 
+
+                    const avgDaily = data.days_analyzed > 0
+                        ? Math.round(data.total_votes / data.days_analyzed)
                         : 0;
                     document.getElementById('timeAvgDaily').textContent = avgDaily.toLocaleString();
-                    
+
                     // Update charts
                     updateTimeCharts(data);
                 }
@@ -5019,17 +4977,17 @@
                 showNotification('Failed to load time-based data', 'error');
             }
         }
-        
+
         // Update time-based charts
         function updateTimeCharts(data) {
             // Cumulative votes chart
             const ctx1 = document.getElementById('cumulativeChart');
             if (ctx1) {
                 if (cumulativeChart) cumulativeChart.destroy();
-                
+
                 const labels = data.cumulative.map(d => d.date);
                 const values = data.cumulative.map(d => d.count);
-                
+
                 cumulativeChart = new Chart(ctx1, {
                     type: 'line',
                     data: {
@@ -5062,18 +5020,18 @@
                     }
                 });
             }
-            
+
             // Heatmap chart (hourly activity)
             const ctx2 = document.getElementById('heatmapChart');
             if (ctx2) {
                 if (heatmapChart) heatmapChart.destroy();
-                
+
                 // Prepare heatmap data
                 const hourlyLabels = [];
                 for (let i = 0; i < 24; i++) {
                     hourlyLabels.push(i + ':00');
                 }
-                
+
                 // Use the daily_hourly data for heatmap
                 const allHourlyData = Object.values(data.daily_hourly || {});
                 const avgHourly = [];
@@ -5087,7 +5045,7 @@
                     });
                     avgHourly.push(count > 0 ? Math.round(sum / count) : 0);
                 }
-                
+
                 heatmapChart = new Chart(ctx2, {
                     type: 'bar',
                     data: {
@@ -5130,18 +5088,18 @@
                 });
             }
         }
-        
+
         // Export to CSV
         function exportToCSV() {
             const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
             const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
             const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
-            
+
             let url = `/admin/api/reports/export?type=${reportType}&days=${dateRange}`;
             if (electionId) {
                 url += `&election_id=${electionId}`;
             }
-            
+
             // Create a link and trigger download
             const link = document.createElement('a');
             link.href = url;
@@ -5149,24 +5107,24 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             showNotification('CSV export started', 'success');
         }
-        
+
         // Export to PDF
         function exportToPDF() {
             const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
             const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
             const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
-            
+
             let url = `/admin/api/reports/export-pdf?type=${reportType}&days=${dateRange}`;
             if (electionId) {
                 url += `&election_id=${electionId}`;
             }
-            
+
             // Open in new tab for printing/saving
             window.open(url, '_blank');
-            
+
             showNotification('PDF report opened in new tab. Use browser print to save as PDF.', 'info');
         }
     </script>
