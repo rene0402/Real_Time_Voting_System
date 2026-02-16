@@ -741,6 +741,15 @@
             transform: translateX(26px);
         }
 
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active-section {
+            display: block;
+        }
+
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -1015,13 +1024,53 @@
                     </div>
                 </div>
 
-                <!-- Active Elections Panel -->
+            <!-- Active Elections Panel -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <div class="card-title">Your Active Elections</div>
                     </div>
                     <div class="election-grid" id="activeElectionsList">
-                        <!-- Election cards will be dynamically loaded -->
+                        @forelse($electionsWithStatus ?? [] as $election)
+                            <div class="election-card">
+                                <div class="election-header">
+                                    <div class="election-title">{{ $election->title }}</div>
+                                    <span class="status-badge status-{{ $election->status == 'active' ? 'active' : 'closed' }}">
+                                        {{ ucfirst($election->status) }}
+                                    </span>
+                                </div>
+                                <div class="election-time">
+                                    <i class="fas fa-clock"></i>
+                                    @if($election->status == 'active')
+                                        Ends: {{ $election->end_date->format('M d, Y H:i') }}
+                                    @else
+                                        {{ $election->time_remaining }}
+                                    @endif
+                                </div>
+                                <div class="election-description">
+                                    {{ $election->description ?? 'Vote for your preferred candidates in this election.' }}
+                                </div>
+                                @if($election->has_voted)
+                                    <button class="vote-btn voted" disabled>
+                                        <i class="fas fa-check"></i> Already Voted
+                                    </button>
+                                @elseif($election->status == 'active')
+                                    <button class="vote-btn" onclick="startVoting({{ $election->id }}, '{{ $election->title }}')">
+                                        Vote Now
+                                    </button>
+                                @else
+                                    <button class="vote-btn closed" disabled>
+                                        Voting Closed
+                                    </button>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="election-card">
+                                <div class="election-description" style="text-align: center; padding: 2rem;">
+                                    <i class="fas fa-info-circle" style="font-size: 2rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                                    <p>No active elections available at the moment.</p>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -1079,52 +1128,47 @@
                         <div class="card-subtitle">Select an election to cast your vote</div>
                     </div>
                     <div class="election-grid">
-                        <!-- Presidential Election -->
-                        <div class="election-card">
-                            <div class="election-header">
-                                <div class="election-title">Presidential Election 2024</div>
-                                <span class="status-badge status-active">Active</span>
+                        @forelse($electionsWithStatus ?? [] as $election)
+                            <div class="election-card">
+                                <div class="election-header">
+                                    <div class="election-title">{{ $election->title }}</div>
+                                    <span class="status-badge status-{{ $election->status == 'active' ? 'active' : 'closed' }}">
+                                        {{ ucfirst($election->status) }}
+                                    </span>
+                                </div>
+                                <div class="election-time">
+                                    <i class="fas fa-clock"></i>
+                                    @if($election->status == 'active')
+                                        Ends: {{ $election->end_date->format('M d, Y H:i') }}
+                                    @else
+                                        {{ $election->time_remaining }}
+                                    @endif
+                                </div>
+                                <div class="election-description">
+                                    {{ $election->description ?? 'Vote for your preferred candidates in this election.' }}
+                                </div>
+                                @if($election->has_voted)
+                                    <button class="vote-btn voted" disabled>
+                                        <i class="fas fa-check"></i> Already Voted
+                                    </button>
+                                @elseif($election->status == 'active')
+                                    <button class="vote-btn" onclick="startVoting({{ $election->id }}, '{{ $election->title }}')">
+                                        Vote Now
+                                    </button>
+                                @else
+                                    <button class="vote-btn closed" disabled>
+                                        Voting Closed
+                                    </button>
+                                @endif
                             </div>
-                            <div class="election-time">
-                                <i class="fas fa-clock"></i> Ends: Dec 15, 2024 23:59
+                        @empty
+                            <div class="election-card">
+                                <div class="election-description" style="text-align: center; padding: 2rem;">
+                                    <i class="fas fa-info-circle" style="font-size: 2rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                                    <p>No active elections available at the moment.</p>
+                                </div>
                             </div>
-                            <div class="election-description">
-                                Vote for the next President of the organization. Candidates have presented their platforms for digital transformation and member welfare.
-                            </div>
-                            <button class="vote-btn" onclick="startVoting('president')">Vote Now</button>
-                        </div>
-
-                        <!-- Board Election -->
-                        <div class="election-card">
-                            <div class="election-header">
-                                <div class="election-title">Board of Directors Election</div>
-                                <span class="status-badge status-active">Active</span>
-                            </div>
-                            <div class="election-time">
-                                <i class="fas fa-clock"></i> Ends: Dec 20, 2024 23:59
-                            </div>
-                            <div class="election-description">
-                                Elect 5 members to the Board of Directors. Each voter can select up to 5 candidates.
-                            </div>
-                            <button class="vote-btn voted" disabled>
-                                <i class="fas fa-check"></i> Already Voted
-                            </button>
-                        </div>
-
-                        <!-- Referendum -->
-                        <div class="election-card">
-                            <div class="election-header">
-                                <div class="election-title">Constitutional Amendment</div>
-                                <span class="status-badge status-closed">Closed</span>
-                            </div>
-                            <div class="election-time">
-                                <i class="fas fa-clock"></i> Ended: Dec 10, 2024
-                            </div>
-                            <div class="election-description">
-                                Vote on proposed amendments to the organization's constitution regarding membership criteria.
-                            </div>
-                            <button class="vote-btn closed" disabled>Voting Closed</button>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -1522,16 +1566,12 @@
         }
 
         // Start voting process
-        function startVoting(electionType) {
-            currentElection = electionType;
-            const electionTitle = electionType === 'president'
-                ? 'Presidential Election 2024'
-                : 'Board of Directors Election';
+        function startVoting(electionId, electionTitle) {
+            currentElection = electionId;
+            document.getElementById('votingElectionTitle').textContent = electionTitle || 'Election Voting';
 
-            document.getElementById('votingElectionTitle').textContent = electionTitle;
-
-            // Load candidates based on election type
-            loadCandidates(electionType);
+            // Load candidates based on election ID
+            loadCandidates(electionId);
 
             // Show voting section
             showSection('voting');
@@ -1539,56 +1579,86 @@
         }
 
         // Load candidates
-        function loadCandidates(electionType) {
+        async function loadCandidates(electionId) {
             const candidateList = document.getElementById('candidateList');
-            let candidates = [];
 
-            if (electionType === 'president') {
-                candidates = [
-                    {
-                        id: 1,
-                        name: 'John Smith',
-                        party: 'Progressive Alliance',
-                        description: 'Focus on digital transformation and member welfare. 10 years experience in leadership.',
-                        photo: 'https://ui-avatars.com/api/?name=John+Smith&background=3498db&color=fff&size=80'
-                    },
-                    {
-                        id: 2,
-                        name: 'Jane Doe',
-                        party: 'Unity Coalition',
-                        description: 'Advocate for transparency and financial reform. Former finance committee chair.',
-                        photo: 'https://ui-avatars.com/api/?name=Jane+Doe&background=9b59b6&color=fff&size=80'
-                    },
-                    {
-                        id: 3,
-                        name: 'Robert Johnson',
-                        party: 'Independent',
-                        description: 'Running on platform of innovation and youth engagement. Tech entrepreneur.',
-                        photo: 'https://ui-avatars.com/api/?name=Robert+Johnson&background=2ecc71&color=fff&size=80'
+            try {
+                const response = await fetch(`/voter/candidates/${electionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
-                ];
-            }
+                });
 
-            let html = '';
-            candidates.forEach(candidate => {
-                html += `
-                    <div class="candidate-card" onclick="selectCandidate(${candidate.id})" id="candidate-${candidate.id}">
-                        <img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo">
-                        <div class="candidate-info">
-                            <div class="candidate-name">${candidate.name}</div>
-                            <div style="color: #666; margin-bottom: 0.5rem;">${candidate.party}</div>
-                            <div class="candidate-description">${candidate.description}</div>
-                        </div>
-                        <button class="candidate-select" onclick="selectCandidate(${candidate.id}); event.stopPropagation();">
-                            Select
-                        </button>
-                    </div>
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    let html = `
+                    <table class="candidate-table">
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
-            });
 
-            candidateList.innerHTML = html;
-            selectedCandidate = null;
-            document.getElementById('reviewVoteBtn').style.display = 'none';
+                data.data.forEach(candidate => {
+                    html += `
+                        <tr onclick="selectCandidate(${candidate.id})" id="candidate-${candidate.id}">
+                            <td>
+                                <img src="${candidate.photo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(candidate.name) + '&background=3498db&color=fff&size=60'}" alt="${candidate.name}" class="candidate-photo">
+                            </td>
+                            <td>
+                                <div class="candidate-name">${candidate.name}</div>
+                            </td>
+                            <td>
+                                <div class="candidate-description">${candidate.description || 'No description available.'}</div>
+                            </td>
+                            <td>
+                                <button class="candidate-select" onclick="selectCandidate(${candidate.id}); event.stopPropagation();">
+                                    Select
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                `;
+
+                    candidateList.innerHTML = html;
+                    selectedCandidate = null;
+                    document.getElementById('reviewVoteBtn').style.display = 'none';
+
+                    // Reset any previously selected state
+                    document.querySelectorAll('.candidate-table tr').forEach(row => {
+                        row.classList.remove('selected');
+                    });
+                    document.querySelectorAll('.candidate-select').forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.textContent = 'Select';
+                    });
+                } else {
+                    candidateList.innerHTML = '<p style="text-align: center; color: #e74c3c;">' + (data.error || 'Error loading candidates. Please try again.') + '</p>';
+                }
+
+                // Update table responsiveness
+                const table = candidateList.querySelector('.candidate-table');
+                if (table) {
+                    table.style.width = '100%';
+                }
+
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                candidateList.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error loading candidates. Please try again.</p>';
+            }
         }
 
         // Select candidate
@@ -1627,22 +1697,55 @@
         }
 
         // Submit vote
-        function submitVote() {
-            // Simulate vote submission
-            console.log('Vote submitted for:', selectedCandidate);
+        async function submitVote() {
+            if (!selectedCandidate) {
+                alert('Please select a candidate first.');
+                return;
+            }
 
-            // Close confirmation modal
-            closeVoteConfirmation();
+            try {
+                const response = await fetch(`/voter/vote/${currentElection}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        choices: [selectedCandidate.id] // Send array of candidate IDs
+                    })
+                });
 
-            // Show success modal
-            document.getElementById('voteSuccessModal').classList.add('active');
+                const data = await response.json();
 
-            // Update voting status
-            document.getElementById('votingStatus').textContent = 'Voted';
+                if (response.ok) {
+                    // Close confirmation modal
+                    closeVoteConfirmation();
 
-            // Update active elections count
-            const count = parseInt(document.getElementById('activeElectionsCount').textContent);
-            document.getElementById('activeElectionsCount').textContent = count - 1;
+                    // Update reference code in success modal
+                    document.getElementById('voteReferenceCode').textContent = data.reference_code;
+
+                    // Show success modal
+                    document.getElementById('voteSuccessModal').classList.add('active');
+
+                    // Update voting status
+                    document.getElementById('votingStatus').textContent = 'Voted';
+
+                    // Update active elections count
+                    const count = parseInt(document.getElementById('activeElectionsCount').textContent);
+                    document.getElementById('activeElectionsCount').textContent = count - 1;
+
+                    // Refresh the page after a delay to show updated status
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+
+                } else {
+                    alert(data.error || 'Error submitting vote. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please check your connection and try again.');
+            }
         }
 
         // Close vote success modal
@@ -1717,40 +1820,7 @@
             setInterval(update, 1000);
         }
 
-        // Initialize active elections list
-        function initActiveElections() {
-            const elections = [
-                { title: 'Presidential Election', votes: 892, total: 2000, time: '2 days left' },
-                { title: 'Board Election', votes: 1247, total: 2000, time: '7 days left' }
-            ];
 
-            let html = '';
-            elections.forEach(election => {
-                const percentage = Math.round((election.votes / election.total) * 100);
-                html += `
-                    <div class="election-card">
-                        <div class="election-header">
-                            <div class="election-title">${election.title}</div>
-                            <span class="status-badge status-active">Active</span>
-                        </div>
-                        <div class="election-time">
-                            <i class="fas fa-clock"></i> ${election.time}
-                        </div>
-                        <div style="margin: 1rem 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <span>Progress: ${percentage}%</span>
-                                <span>${election.votes}/${election.total} votes</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${percentage}%; height: 8px; background: #4CAF50; border-radius: 4px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            document.getElementById('activeElectionsList').innerHTML = html;
-        }
 
         // Initialize the dashboard
         document.addEventListener('DOMContentLoaded', function() {
