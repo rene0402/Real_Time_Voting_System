@@ -288,7 +288,7 @@
             <div class="logo">
                 <img src="/images/cpsu-logo.jpg" alt="CPSU Logo">
             </div>
-          
+
             <h1 class="title">
                 <span class="real-time">REAL TIME</span>
                 <span class="voting"> VOTING </span>

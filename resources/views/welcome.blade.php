@@ -29,13 +29,13 @@
             --cpsu-red: #dc3545;
             --cpsu-purple: #6f42c1;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
             overflow-x: hidden;
         }
-        
+
         /* Preloader */
         .js-preloader {
             position: fixed;
@@ -49,18 +49,18 @@
             justify-content: center;
             z-index: 9999;
         }
-        
+
         .preloader-inner {
             text-align: center;
         }
-        
+
         .dots {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
         }
-        
+
         .dots span {
             width: 20px;
             height: 20px;
@@ -68,15 +68,15 @@
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
-        
+
         .dots span:nth-child(1) { animation-delay: -0.32s; }
         .dots span:nth-child(2) { animation-delay: -0.16s; }
-        
+
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
-        
+
         .sub-header {
             background: green;
             color: white;
@@ -185,24 +185,24 @@
             background: #FFD700;
             color: #004d00;
         }
-        
+
         .main-nav .nav li a i {
             margin-right: 8px;
         }
-        
+
         .menu-trigger {
             display: none;
             cursor: pointer;
             padding: 10px;
         }
-        
+
         /* Main Banner */
         .main-banner {
             position: relative;
             overflow: hidden;
             margin-top: 0;
         }
-        
+
         .item-1 {
             background: linear-gradient(rgba(0, 51, 102, 0.3), rgba(0, 51, 102, 0.3)), url('/images/cpsu2.jpg') !important;
             background-size: cover !important;
@@ -223,7 +223,7 @@
             background-repeat: no-repeat !important;
             background-position: center !important;
         }
-        
+
         .owl-carousel .item {
             height: 80vh;
             background-size: cover !important;
@@ -232,14 +232,14 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .header-text {
             max-width: 800px;
             padding: 0 20px;
             text-align: center;
             color: white;
         }
-        
+
         .header-text .category {
             background: var(--cpsu-gold);
             color: var(--cpsu-blue);
@@ -250,23 +250,23 @@
             display: inline-block;
             margin-bottom: 30px;
         }
-        
+
         .header-text h2 {
             font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 30px;
             line-height: 1.2;
         }
-        
+
         /* Sections */
         .section {
             padding: 100px 0;
         }
-        
+
         .section-heading {
             margin-bottom: 50px;
         }
-        
+
         .section-heading h6 {
             color: var(--cpsu-blue);
             font-size: 18px;
@@ -276,7 +276,7 @@
             display: inline-block;
             padding-left: 40px;
         }
-        
+
         .section-heading h6:before {
             content: '';
             position: absolute;
@@ -287,13 +287,13 @@
             height: 3px;
             background: var(--cpsu-gold);
         }
-        
+
         .section-heading h2 {
             font-size: 2.5rem;
             font-weight: 700;
             color: var(--cpsu-blue);
         }
-        
+
         /* Featured Section */
         .left-image {
             position: relative;
@@ -302,14 +302,14 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             height: 100%;
         }
-        
+
         .left-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             min-height: 500px;
         }
-        
+
         .vote-overlay-link {
             position: absolute;
             top: 50%;
@@ -317,7 +317,7 @@
             transform: translate(-50%, -50%);
             text-decoration: none;
         }
-        
+
         /* Accordion */
         .accordion-button {
             font-weight: 600;
@@ -327,18 +327,18 @@
             margin-bottom: 10px;
             border-radius: 10px !important;
         }
-        
+
         .accordion-button:not(.collapsed) {
             background: var(--cpsu-blue);
             color: white;
         }
-        
+
         .accordion-body {
             padding: 20px;
             background: #f8f9fa;
             border-radius: 0 0 10px 10px;
         }
-        
+
         /* Info Table */
         .info-table {
             background: white;
@@ -347,41 +347,41 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             height: 100%;
         }
-        
+
         .info-table ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .info-table ul li {
             display: flex;
             align-items: center;
             padding: 20px 0;
             border-bottom: 1px solid #eee;
         }
-        
+
         .info-table ul li:last-child {
             border-bottom: none;
         }
-        
+
         .info-table ul li i {
             margin-right: 20px;
         }
-        
+
         .info-table ul li h4 {
             font-size: 18px;
             font-weight: 700;
             color: var(--cpsu-blue);
             margin: 0;
         }
-        
+
         .info-table ul li span {
             color: #666;
             font-weight: 400;
             font-size: 14px;
         }
-        
+
         /* Video Section */
         .video-frame {
             position: relative;
@@ -389,13 +389,13 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
-        
+
         .video-frame img {
             width: 100%;
             height: 400px;
             object-fit: cover;
         }
-        
+
         .video-frame a {
             position: absolute;
             top: 50%;
@@ -413,35 +413,35 @@
             transition: all 0.3s;
             text-decoration: none;
         }
-        
+
         .video-frame a:hover {
             transform: translate(-50%, -50%) scale(1.1);
         }
-        
+
         /* Fun Facts */
         .fun-facts {
             background: var(--cpsu-blue);
             color: white;
             padding: 80px 0;
         }
-        
+
         .counter {
             text-align: center;
             padding: 30px;
         }
-        
+
         .counter h2 {
             font-size: 3.5rem;
             font-weight: 700;
             color: var(--cpsu-gold);
             margin-bottom: 10px;
         }
-        
+
         .count-text {
             font-size: 18px;
             font-weight: 500;
         }
-        
+
         /* Tabs */
         .tabs-content {
             background: white;
@@ -449,11 +449,11 @@
             padding: 40px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        
+
         .nav-tabs {
             border-bottom: 2px solid #eee;
         }
-        
+
         .nav-tabs .nav-link {
             border: none;
             color: #666;
@@ -463,16 +463,16 @@
             border-radius: 10px 10px 0 0;
             transition: all 0.3s;
         }
-        
+
         .nav-tabs .nav-link.active {
             background: var(--cpsu-blue);
             color: white;
         }
-        
+
         .tab-content {
             padding: 30px 0;
         }
-        
+
         /* Candidates */
         .candidate-card {
             background: white;
@@ -483,18 +483,18 @@
             transition: all 0.3s;
             height: 100%;
         }
-        
+
         .candidate-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
-        
+
         .candidate-card img {
             width: 100%;
             height: 250px;
             object-fit: cover;
         }
-        
+
         .candidate-card .category {
             display: inline-block;
             background: var(--cpsu-gold);
@@ -505,24 +505,24 @@
             font-weight: 600;
             margin: 20px 20px 10px;
         }
-        
+
         .candidate-card h6 {
             color: var(--cpsu-blue);
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0 20px 10px;
         }
-        
+
         .candidate-card h4 {
             font-size: 1.2rem;
             margin: 0 20px 20px;
         }
-        
+
         .candidate-card h4 a {
             color: #333;
             text-decoration: none;
         }
-        
+
         .candidate-card ul {
             list-style: none;
             padding: 0 20px;
@@ -530,25 +530,25 @@
             display: flex;
             flex-wrap: wrap;
         }
-        
+
         .candidate-card ul li {
             width: 50%;
             margin-bottom: 10px;
             color: #666;
         }
-        
+
         .candidate-card ul li span {
             float: right;
             color: var(--cpsu-blue);
             font-weight: 600;
         }
-        
+
         .main-button {
             padding: 20px;
             border-top: 1px solid #eee;
             margin-top: auto;
         }
-        
+
         .main-button a {
             display: block;
             background: var(--cpsu-blue);
@@ -560,23 +560,23 @@
             text-decoration: none;
             transition: all 0.3s;
         }
-        
+
         .main-button a:hover {
             background: var(--cpsu-gold);
             color: var(--cpsu-blue);
         }
-        
+
         /* Contact */
         .contact-content {
             padding: 50px 0 100px;
         }
-        
+
         #map iframe {
             border-radius: 15px;
             width: 100%;
             height: 500px;
         }
-        
+
         .phone, .email {
             display: flex;
             align-items: center;
@@ -587,24 +587,24 @@
             margin-top: 30px;
             height: 100%;
         }
-        
+
         .phone i, .email i {
             margin-right: 20px;
         }
-        
+
         .phone h6, .email h6 {
             font-size: 18px;
             font-weight: 700;
             color: var(--cpsu-blue);
             margin: 0;
         }
-        
+
         .phone span, .email span {
             color: #666;
             font-weight: 400;
             font-size: 14px;
         }
-        
+
         #contact-form {
             background: white;
             padding: 40px;
@@ -612,20 +612,20 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             height: 100%;
         }
-        
+
         fieldset {
             margin-bottom: 25px;
             border: none;
             padding: 0;
         }
-        
+
         fieldset label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--cpsu-blue);
         }
-        
+
         fieldset input, fieldset textarea, fieldset select {
             width: 100%;
             padding: 15px;
@@ -634,12 +634,12 @@
             font-size: 16px;
             transition: all 0.3s;
         }
-        
+
         fieldset input:focus, fieldset textarea:focus, fieldset select:focus {
             border-color: var(--cpsu-blue);
             outline: none;
         }
-        
+
         .orange-button {
             background: var(--cpsu-gold);
             color: var(--cpsu-blue);
@@ -652,12 +652,12 @@
             transition: all 0.3s;
             width: 100%;
         }
-        
+
         .orange-button:hover {
             background: var(--cpsu-blue);
             color: white;
         }
-        
+
         /* Footer */
         footer {
             background: var(--cpsu-blue);
@@ -665,14 +665,14 @@
             padding: 30px 0;
             text-align: center;
         }
-        
+
         /* Real-time voting specific styles */
         .vote-count {
             font-size: 2.5rem;
             font-weight: 700;
             color: var(--cpsu-green);
         }
-        
+
         .vote-progress {
             height: 10px;
             border-radius: 5px;
@@ -680,13 +680,13 @@
             margin: 20px 0;
             overflow: hidden;
         }
-        
+
         .vote-progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--cpsu-blue), var(--cpsu-purple));
             transition: width 0.5s ease;
         }
-        
+
         .live-badge {
             background: var(--cpsu-red);
             color: white;
@@ -698,13 +698,13 @@
             float: right;
             margin: 20px;
         }
-        
+
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
-        
+
         .vote-btn {
             background: var(--cpsu-green);
             color: white;
@@ -715,19 +715,19 @@
             transition: all 0.3s;
             width: 100%;
         }
-        
+
         .vote-btn:hover {
             background: #218838;
             transform: translateY(-2px);
         }
-        
+
         .results-chart {
             background: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        
+
         .position-badge {
             background: var(--cpsu-purple);
             color: white;
@@ -736,7 +736,7 @@
             font-size: 14px;
             font-weight: 600;
         }
-        
+
         /* Responsive Design */
         @media (max-width: 992px) {
             .main-nav .nav {
@@ -750,38 +750,38 @@
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
                 padding: 20px;
             }
-            
+
             .menu-trigger {
                 display: block;
             }
-            
+
             .main-nav .nav.active {
                 display: flex;
             }
-            
+
             .header-text h2 {
                 font-size: 2.5rem;
             }
-            
+
             .section-heading h2 {
                 font-size: 2rem;
             }
         }
-        
+
         @media (max-width: 768px) {
             .sub-header .info {
                 justify-content: center;
                 margin-bottom: 10px;
             }
-            
+
             .social-links {
                 justify-content: center;
             }
-            
+
             .header-text h2 {
                 font-size: 2rem;
             }
-            
+
             .counter h2 {
                 font-size: 2.5rem;
             }
@@ -834,16 +834,16 @@
               <img src="/logo/Central_Philippines_State_University_Logo.jpg" alt="CPSU Logo" style="height: 50px; margin-right: 10px; background: white; padding: 5px; border-radius: 5px;">
               <h1>CPSU<span>VOTE</span></h1>
             </a>
-            
+
             <ul class="nav">
               <li><a href="{{ url('/') }}" class="active">Home</a></li>
               <li><a href="#candidates">Candidates</a></li>
               <li><a href="#results">Live Results</a></li>
               <li><a href="{{ route('login') }}">Cast Vote</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li><a href="{{ route('login') }}"><i class="fa fa-user"></i> Student Login</a></li>
+              <li><a href="{{ route('login') }}"><i class="fa fa-user"></i> Login</a></li>
             </ul>
-            
+
             <a class='menu-trigger'>
               <span>Menu</span>
             </a>
@@ -1050,7 +1050,7 @@
                   </li>
                 </ul>
               </div>
-              
+
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="president" role="tabpanel" aria-labelledby="president-tab">
                   <div class="row">
@@ -1108,7 +1108,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="tab-pane fade" id="vice-president" role="tabpanel" aria-labelledby="vice-president-tab">
                   <div class="row">
                     <div class="col-lg-3">
@@ -1165,7 +1165,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="tab-pane fade" id="secretary" role="tabpanel" aria-labelledby="secretary-tab">
                   <div class="row">
                     <div class="col-lg-3">
@@ -1262,7 +1262,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Candidate 2 -->
         <div class="col-lg-4 col-md-6">
           <div class="candidate-card">
@@ -1282,7 +1282,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Candidate 3 -->
         <div class="col-lg-4 col-md-6">
           <div class="candidate-card">
@@ -1303,7 +1303,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Candidate 4 -->
         <div class="col-lg-4 col-md-6">
           <div class="candidate-card">
@@ -1323,7 +1323,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Candidate 5 -->
         <div class="col-lg-4 col-md-6">
           <div class="candidate-card">
@@ -1344,7 +1344,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Candidate 6 -->
         <div class="col-lg-4 col-md-6">
           <div class="candidate-card">
@@ -1496,20 +1496,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
-  
+
   <script>
     $(document).ready(function(){
       // Preloader
       $(window).on('load', function(){
         $('.js-preloader').fadeOut();
       });
-      
+
       // Counter Animation
       $('.count-number').counterUp({
         delay: 10,
         time: 1000
       });
-      
+
       // Owl Carousel
       $('.owl-banner').owlCarousel({
         items: 1,
@@ -1526,19 +1526,19 @@
           }
         }
       });
-      
+
       // Mobile menu toggle
       $('.menu-trigger').click(function(){
         $('.main-nav .nav').toggleClass('active');
       });
-      
+
       // Close menu when clicking outside
       $(document).click(function(event) {
         if (!$(event.target).closest('.main-nav').length) {
           $('.main-nav .nav').removeClass('active');
         }
       });
-      
+
       // Live vote update simulation
       function updateLiveVotes() {
         $('.vote-count').each(function() {
@@ -1546,17 +1546,17 @@
           let randomIncrement = Math.floor(Math.random() * 3);
           $(this).text(current + randomIncrement);
         });
-        
+
         updatePercentages();
       }
-      
+
       function updatePercentages() {
         $('.vote-progress-bar').each(function() {
           let currentWidth = parseFloat($(this).attr('data-width') || 0);
           let randomChange = (Math.random() * 2 - 1) * 0.5;
           let newWidth = Math.max(0, Math.min(100, currentWidth + randomChange));
           $(this).css('width', newWidth + '%').attr('data-width', newWidth);
-          
+
           // Update percentage text
           let span = $(this).closest('.mb-3').find('span').last();
           let currentText = span.text();
@@ -1567,7 +1567,7 @@
           }
         });
       }
-      
+
       // Initialize percentages
       $('.vote-progress-bar').each(function() {
         let style = $(this).attr('style');
@@ -1578,10 +1578,10 @@
           }
         }
       });
-      
+
       // Update votes every 30 seconds
       setInterval(updateLiveVotes, 30000);
-      
+
       // Smooth scrolling for anchor links
       $('a[href^="#"]').on('click', function(event) {
         if (this.hash !== "") {
