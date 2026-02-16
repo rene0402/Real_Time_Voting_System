@@ -36,6 +36,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('api/voters/{id}/block', [\App\Http\Controllers\Admin\VoterController::class, 'apiBlock'])->name('api.voters.block');
     Route::post('api/voters/{id}/unblock', [\App\Http\Controllers\Admin\VoterController::class, 'apiUnblock'])->name('api.voters.unblock');
     Route::delete('api/voters/{id}', [\App\Http\Controllers\Admin\VoterController::class, 'apiDestroy'])->name('api.voters.destroy');
+    
+    // Real-time monitoring API
+    Route::get('api/monitoring', [\App\Http\Controllers\Admin\DashboardController::class, 'getRealTimeMonitoring'])->name('api.monitoring');
+    
+    // Reports & Analytics API
+    Route::get('api/reports/voter-turnout', [\App\Http\Controllers\Admin\DashboardController::class, 'getVoterTurnoutReport'])->name('api.reports.voter-turnout');
+    Route::get('api/reports/election-results', [\App\Http\Controllers\Admin\DashboardController::class, 'getElectionResults'])->name('api.reports.election-results');
+    Route::get('api/reports/ai-patterns', [\App\Http\Controllers\Admin\DashboardController::class, 'getAIPatternAnalysis'])->name('api.reports.ai-patterns');
+    Route::get('api/reports/time-based', [\App\Http\Controllers\Admin\DashboardController::class, 'getTimeBasedVotingData'])->name('api.reports.time-based');
+    Route::get('api/reports/export', [\App\Http\Controllers\Admin\DashboardController::class, 'exportReport'])->name('api.reports.export');
+    Route::get('api/reports/export-pdf', [\App\Http\Controllers\Admin\DashboardController::class, 'exportReportPDF'])->name('api.reports.export-pdf');
 });
 
 // Admin routes

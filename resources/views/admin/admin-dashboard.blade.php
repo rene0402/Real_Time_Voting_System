@@ -1139,7 +1139,136 @@
             transform: translateX(30px);
         }
 
-        /* Responsive */
+        /* Audit Logs Styles */
+            .filters-section {
+                background: white;
+                border-radius: 15px;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .filters-row {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+                align-items: flex-end;
+            }
+
+            .filter-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .filter-label {
+                font-weight: 600;
+                color: var(--cpsu-blue);
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .filter-input {
+                padding: 0.7rem 1rem;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                min-width: 150px;
+                transition: all 0.3s;
+                font-weight: 500;
+            }
+
+            .filter-input:focus {
+                outline: none;
+                border-color: var(--cpsu-gold);
+                box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+            }
+
+            .filter-actions {
+                margin-left: auto;
+            }
+
+            .btn-export {
+                background: linear-gradient(135deg, var(--cpsu-green), #229954);
+                color: white;
+                border: none;
+                padding: 0.7rem 1.5rem;
+                border-radius: 10px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-export:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+            }
+
+            .action-type-badge {
+                padding: 0.4rem 0.8rem;
+                border-radius: 50px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .badge-admin_action {
+                background: linear-gradient(135deg, #3498db, #2980b9);
+                color: white;
+            }
+
+            .badge-voter_activity {
+                background: linear-gradient(135deg, #9b59b6, #8e44ad);
+                color: white;
+            }
+
+            .badge-vote_submission {
+                background: linear-gradient(135deg, #27ae60, #229954);
+                color: white;
+            }
+
+            .badge-system_change {
+                background: linear-gradient(135deg, #f39c12, #e67e22);
+                color: white;
+            }
+
+            .category-badge {
+                padding: 0.3rem 0.6rem;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                background: var(--cpsu-light);
+                color: #666;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 3rem;
+                color: #999;
+            }
+
+            .empty-state i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                color: #ddd;
+            }
+
+            .empty-state h3 {
+                margin: 0 0 0.5rem 0;
+                color: #666;
+            }
+
+            .empty-state p {
+                margin: 0;
+                font-size: 0.9rem;
+            }
+
+            /* Responsive */
         @media (max-width: 1200px) {
             .charts-section {
                 grid-template-columns: 1fr;
@@ -1236,6 +1365,65 @@
             .page-title {
                 font-size: 1.5rem;
             }
+        }
+        /* Status Dot for Monitoring */
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+            vertical-align: middle;
+        }
+
+        .status-dot.online {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+
+        .status-dot.offline {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+            animation: blink 1s infinite;
+        }
+
+        /* Report Tab Styles */
+        .report-tab {
+            display: none;
+        }
+
+        .report-tab.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anomaly-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .anomaly-high {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .anomaly-medium {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .anomaly-low {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
         }
     </style>
 </head>
@@ -1936,32 +2124,460 @@
             </div>
 
             <div id="audit" class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Audit Logs</div>
+                <!-- Audit Logs Stats -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAuditLogs">{{ \App\Models\AuditLog::count() }}</div>
+                        <div class="stat-label">Total Logs</div>
                     </div>
-                    <div class="card-value">Coming Soon</div>
-                    <div class="card-change">This section is under development</div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ \App\Models\AuditLog::where('action_type', 'admin_action')->count() }}</div>
+                        <div class="stat-label">Admin Actions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ \App\Models\AuditLog::where('action_type', 'voter_activity')->count() }}</div>
+                        <div class="stat-label">Voter Activity</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ \App\Models\AuditLog::where('action_type', 'vote_submission')->count() }}</div>
+                        <div class="stat-label">Vote Submissions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ \App\Models\AuditLog::whereDate('created_at', \Carbon\Carbon::today())->count() }}</div>
+                        <div class="stat-label">Today's Logs</div>
+                    </div>
+                </div>
+
+                <!-- Audit Logs Tabs -->
+                <div class="tabs">
+                    <div class="tab active" onclick="showAuditTab('all')">All Logs</div>
+                    <div class="tab" onclick="showAuditTab('admin_action')">Admin Actions</div>
+                    <div class="tab" onclick="showAuditTab('voter_activity')">Voter Activity</div>
+                    <div class="tab" onclick="showAuditTab('vote_submission')">Vote Timestamps</div>
+                    <div class="tab" onclick="showAuditTab('system_change')">System Changes</div>
+                </div>
+
+                <!-- Audit Logs Filters -->
+                <div class="filters-section">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Search</label>
+                            <input type="text" class="filter-input" id="auditSearch" placeholder="Search logs..." oninput="filterAuditLogs()">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date From</label>
+                            <input type="date" class="filter-input" id="auditDateFrom" onchange="filterAuditLogs()">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date To</label>
+                            <input type="date" class="filter-input" id="auditDateTo" onchange="filterAuditLogs()">
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-export" onclick="exportAuditLogs()">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Logs Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>User</th>
+                                <th>Action Type</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogsTableBody">
+                            @php
+                            $auditLogs = \App\Models\AuditLog::with('user')->orderBy('created_at', 'desc')->limit(100)->get();
+                            @endphp
+                            @forelse($auditLogs as $log)
+                                <tr>
+                                    <td>
+                                        <div>{{ $log->created_at->format('M d, Y') }}</div>
+                                        <div style="color: #999; font-size: 0.85rem;">{{ $log->created_at->format('H:i:s') }}</div>
+                                    </td>
+                                    <td>
+                                        @if($log->user)
+                                            <div>{{ $log->user->name }}</div>
+                                            <div style="color: #999; font-size: 0.75rem;">{{ $log->user->email }}</div>
+                                        @else
+                                            <span style="color: #999;">System</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="action-type-badge badge-{{ $log->action_type }}">
+                                            {{ $log->action_type_label }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="category-badge">{{ $log->category_label }}</span>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 300px;">{{ $log->description }}</div>
+                                    </td>
+                                    <td>
+                                        <span style="font-family: monospace; font-size: 0.85rem;">
+                                            {{ $log->ip_address ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <i class="fas fa-clipboard-list"></i>
+                                            <h3>No Audit Logs Found</h3>
+                                            <p>No logs recorded yet. Start using the system to generate audit logs.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="monitoring" class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">System Monitoring</div>
+                <!-- Real-Time System Monitoring -->
+                <div class="stats-row">
+                    <!-- Server Status -->
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            <span id="serverStatusIndicator" class="status-dot {{ $monitoringData['server_status']['color'] === 'success' ? 'online' : 'offline' }}"></span>
+                            <span id="serverStatusText">{{ $monitoringData['server_status']['label'] }}</span>
+                        </div>
+                        <div class="stat-label">Server Status</div>
                     </div>
-                    <div class="card-value">Coming Soon</div>
-                    <div class="card-change">This section is under development</div>
+                    
+                    <!-- Active Users -->
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeUsersCount">{{ $monitoringData['active_users']['count'] }}</div>
+                        <div class="stat-label">Active Users (15 min)</div>
+                    </div>
+                    
+                    <!-- Votes Per Minute -->
+                    <div class="stat-item">
+                        <div class="stat-value" id="votesPerMinuteCount">{{ $monitoringData['votes_per_minute'] }}</div>
+                        <div class="stat-label">Votes Per Minute</div>
+                    </div>
+                    
+                    <!-- Votes Today -->
+                    <div class="stat-item">
+                        <div class="stat-value" id="votesTodayCount">{{ number_format($monitoringData['votes_today']) }}</div>
+                        <div class="stat-label">Votes Today</div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="dashboard-grid">
+                    <!-- Peak Voting Times -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Peak Voting Times</div>
+                            <i class="fas fa-clock" style="font-size: 1.5rem; color: var(--cpsu-blue);"></i>
+                        </div>
+                        <div class="card-value" id="peakTime">{{ $monitoringData['peak_voting_times']['peak_label'] }}</div>
+                        <div class="card-change">{{ $monitoringData['peak_voting_times']['peak_count'] }} votes at peak hour</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ $monitoringData['peak_voting_times']['peak_count'] > 0 ? min(100, ($monitoringData['peak_voting_times']['peak_count'] / max($monitoringData['votes_today'], 1)) * 100) : 0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Average Votes Per Hour -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Average Votes/Hour</div>
+                            <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--cpsu-purple);"></i>
+                        </div>
+                        <div class="card-value" id="avgVotesPerHour">{{ $monitoringData['avg_votes_per_hour'] }}</div>
+                        <div class="card-change">Last 24 hours</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ min(100, $monitoringData['avg_votes_per_hour'] * 10) }}%; background: linear-gradient(90deg, var(--cpsu-purple), #8e44ad);"></div>
+                        </div>
+                    </div>
+
+                    <!-- System Uptime -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">System Uptime</div>
+                            <i class="fas fa-server" style="font-size: 1.5rem; color: var(--cpsu-green);"></i>
+                        </div>
+                        <div class="card-value">{{ $monitoringData['system_uptime'] }}</div>
+                        <div class="card-change">Since last restart</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, var(--cpsu-green), #229954);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Memory Usage -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Memory Usage</div>
+                            <i class="fas fa-microchip" style="font-size: 1.5rem; color: var(--cpsu-orange);"></i>
+                        </div>
+                        <div class="card-value">{{ $monitoringData['memory_usage']['used'] }} / {{ $monitoringData['memory_usage']['total'] }}</div>
+                        <div class="card-change">{{ $monitoringData['memory_usage']['percentage'] }}% used</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ $monitoringData['memory_usage']['percentage'] }}%; background: linear-gradient(90deg, var(--cpsu-orange), #e67e22);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peak Hours Chart -->
+                <div class="chart-container" style="margin-top: 2rem;">
+                    <div class="chart-title">Voting Activity by Hour (Last 7 Days)</div>
+                    <canvas id="monitoringChart"></canvas>
+                </div>
+
+                <!-- Auto-refresh indicator -->
+                <div style="text-align: center; margin-top: 1.5rem; color: #666;">
+                    <i class="fas fa-sync fa-spin" style="margin-right: 0.5rem;"></i>
+                    Auto-refreshing every 5 seconds
                 </div>
             </div>
 
+            <!-- Reports & Analytics Section -->
             <div id="reports" class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Reports & Analytics</div>
+                <!-- Report Filters -->
+                <div class="filters-section">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Report Type</label>
+                            <select class="filter-input" id="reportType" onchange="loadReportData()">
+                                <option value="voter-turnout">Voter Turnout</option>
+                                <option value="election-results">Election Results</option>
+                                <option value="ai-patterns">AI Voting Patterns</option>
+                                <option value="time-based">Time-Based Analysis</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Election</label>
+                            <select class="filter-input" id="reportElectionFilter" onchange="loadReportData()">
+                                <option value="">All Elections</option>
+                                @if(isset($elections))
+                                    @foreach($elections as $election)
+                                        <option value="{{ $election->id }}">{{ $election->title }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date Range</label>
+                            <select class="filter-input" id="reportDateRange" onchange="loadReportData()">
+                                <option value="7">Last 7 Days</option>
+                                <option value="14">Last 14 Days</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-export" onclick="exportToCSV()">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
+                            <button class="btn-export" style="background: linear-gradient(135deg, #e74c3c, #c0392b);" onclick="exportToPDF()">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-value">Coming Soon</div>
-                    <div class="card-change">This section is under development</div>
+                </div>
+
+                <!-- Report Tabs -->
+                <div class="tabs">
+                    <div class="tab active" onclick="showReportTab('turnout')">Voter Turnout</div>
+                    <div class="tab" onclick="showReportTab('results')">Election Results</div>
+                    <div class="tab" onclick="showReportTab('ai-patterns')">AI Patterns</div>
+                    <div class="tab" onclick="showReportTab('time-based')">Time Analysis</div>
+                </div>
+
+                <!-- Voter Turnout Report -->
+                <div id="report-turnout" class="report-tab active">
+                    <!-- Summary Stats -->
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalRegisteredVoters">-</div>
+                            <div class="stat-label">Total Registered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalVotesCast">-</div>
+                            <div class="stat-label">Total Votes Cast</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="overallTurnout">-</div>
+                            <div class="stat-label">Overall Turnout %</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="avgTurnout">-</div>
+                            <div class="stat-label">Avg per Election</div>
+                        </div>
+                    </div>
+
+                    <!-- Turnout Chart -->
+                    <div class="charts-section">
+                        <div class="chart-container" style="height: 350px;">
+                            <div class="chart-title">Voter Turnout by Election</div>
+                            <canvas id="turnoutChart"></canvas>
+                        </div>
+                        <div class="chart-container" style="height: 350px;">
+                            <div class="chart-title">Turnout Distribution</div>
+                            <canvas id="turnoutPieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Turnout Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Election</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Votes Cast</th>
+                                    <th>Turnout Rate</th>
+                                    <th>Date Range</th>
+                                </tr>
+                            </thead>
+                            <tbody id="turnoutTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading turnout data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Election Results Report -->
+                <div id="report-results" class="report-tab">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Election</th>
+                                    <th>Candidate</th>
+                                    <th>Votes</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Winner</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading results data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Results Chart -->
+                    <div class="chart-container" style="margin-top: 2rem; height: 400px;">
+                        <div class="chart-title">Election Results Comparison</div>
+                        <canvas id="resultsComparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- AI Patterns Report -->
+                <div id="report-ai-patterns" class="report-tab">
+                    <!-- AI Stats -->
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value" id="aiTotalVotes">-</div>
+                            <div class="stat-label">Total Votes Analyzed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="aiUniqueVoters">-</div>
+                            <div class="stat-label">Unique Voters</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="aiPeakHour">-</div>
+                            <div class="stat-label">Peak Voting Hour</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="aiAvgPerHour">-</div>
+                            <div class="stat-label">Avg Votes/Hour</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Pattern Chart -->
+                    <div class="charts-section">
+                        <div class="chart-container" style="height: 350px;">
+                            <div class="chart-title">Voting Activity by Hour</div>
+                            <canvas id="aiHourlyChart"></canvas>
+                        </div>
+                        <div class="chart-container" style="height: 350px;">
+                            <div class="chart-title">Daily Voting Trends</div>
+                            <canvas id="aiDailyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Anomalies Section -->
+                    <div class="table-container">
+                        <h3 class="chart-title" style="margin-bottom: 1.5rem;">Detected Anomalies</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Time</th>
+                                    <th>Count</threshold>
+                                    <th>Threshold</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="anomaliesTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading anomaly data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Time-Based Analysis Report -->
+                <div id="report-time-based" class="report-tab">
+                    <!-- Time Stats -->
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value" id="timeTotalVotes">-</div>
+                            <div class="stat-label">Total Votes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="timeDaysAnalyzed">-</div>
+                            <div class="stat-label">Days Analyzed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="timeChangePercent">-</div>
+                            <div class="stat-label">vs Previous Period</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="timeAvgDaily">-</div>
+                            <div class="stat-label">Avg Daily Votes</div>
+                        </div>
+                    </div>
+
+                    <!-- Cumulative Votes Chart -->
+                    <div class="chart-container" style="height: 400px; margin-bottom: 2rem;">
+                        <div class="chart-title">Cumulative Votes Over Time</div>
+                        <canvas id="cumulativeChart"></canvas>
+                    </div>
+
+                    <!-- Hourly Heatmap -->
+                    <div class="chart-container" style="height: 400px;">
+                        <div class="chart-title">Voting Activity Heatmap (Hourly)</div>
+                        <canvas id="heatmapChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -3663,7 +4279,896 @@
                 transform: translateX(26px);
             }
         `;
+        // Audit Logs Functions
+        function showAuditTab(tabType) {
+            // Update tab active state
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // For now, we'll just show a notification
+            const tabNames = {
+                'all': 'All Logs',
+                'admin_action': 'Admin Actions',
+                'voter_activity': 'Voter Activity',
+                'vote_submission': 'Vote Timestamps',
+                'system_change': 'System Changes'
+            };
+            
+            showNotification(`Showing ${tabNames[tabType] || 'All Logs'}`, 'info');
+        }
+
+        function filterAuditLogs() {
+            const searchTerm = document.getElementById('auditSearch').value.toLowerCase();
+            const dateFrom = document.getElementById('auditDateFrom').value;
+            const dateTo = document.getElementById('auditDateTo').value;
+            
+            const rows = document.querySelectorAll('#auditLogsTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const rowDateCell = row.querySelector('td:first-child');
+                const rowDate = rowDateCell ? rowDateCell.textContent : '';
+                
+                let showRow = true;
+                
+                if (searchTerm && !text.includes(searchTerm)) {
+                    showRow = false;
+                }
+                
+                if (dateFrom || dateTo) {
+                    const rowDateObj = new Date(rowDate);
+                    if (dateFrom && rowDateObj < new Date(dateFrom)) {
+                        showRow = false;
+                    }
+                    if (dateTo && rowDateObj > new Date(dateTo)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+            
+            const visibleCount = document.querySelectorAll('#auditLogsTableBody tr:not([style*="display: none"])').length;
+            showNotification(`Found ${visibleCount} matching logs`, 'info');
+        }
+
+        function exportAuditLogs() {
+            const rows = Array.from(document.querySelectorAll('#auditLogsTableBody tr')).filter(row => row.style.display !== 'none');
+            
+            if (rows.length === 0) {
+                showNotification('No logs to export', 'error');
+                return;
+            }
+            
+            let csvContent = 'Date/Time,User,Action Type,Category,Description,IP Address\n';
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 6) {
+                    const dateTime = cells[0].textContent.trim();
+                    const user = cells[1].textContent.trim().replace(/\n/g, ' ');
+                    const actionType = cells[2].textContent.trim();
+                    const category = cells[3].textContent.trim();
+                    const description = cells[4].textContent.trim().replace(/"/g, '""');
+                    const ipAddress = cells[5].textContent.trim();
+                    
+                    csvContent += `"${dateTime}","${user}","${actionType}","${category}","${description}","${ipAddress}"\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `audit_logs_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification(`Exported ${rows.length} audit logs to CSV`, 'success');
+        }
+
         document.head.appendChild(style);
+
+        // System Monitoring JavaScript
+        let monitoringChart;
+        
+        // Initialize monitoring chart
+        function initMonitoringChart(hourlyData) {
+            const ctx = document.getElementById('monitoringChart');
+            if (!ctx) return;
+            
+            const hours = [];
+            const labels = [];
+            for (let i = 0; i < 24; i++) {
+                hours.push(hourlyData[i] || 0);
+                labels.push(i + ':00');
+            }
+            
+            monitoringChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Votes',
+                        data: hours,
+                        backgroundColor: 'rgba(0, 77, 0, 0.6)',
+                        borderColor: '#004d00',
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Votes'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Hour of Day'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Fetch real-time monitoring data
+        async function fetchMonitoringData() {
+            try {
+                const response = await fetch('/admin/api/monitoring', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateMonitoringUI(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching monitoring data:', error);
+            }
+        }
+        
+        // Update monitoring UI with new data
+        function updateMonitoringUI(data) {
+            // Update server status
+            const statusIndicator = document.getElementById('serverStatusIndicator');
+            const statusText = document.getElementById('serverStatusText');
+            if (statusIndicator && statusText) {
+                statusIndicator.className = 'status-dot ' + (data.server_status.status === 'online' ? 'online' : 'offline');
+                statusText.textContent = data.server_status.label;
+            }
+            
+            // Update active users
+            const activeUsers = document.getElementById('activeUsersCount');
+            if (activeUsers) {
+                activeUsers.textContent = data.active_users.count;
+            }
+            
+            // Update votes per minute
+            const votesPerMinute = document.getElementById('votesPerMinuteCount');
+            if (votesPerMinute) {
+                votesPerMinute.textContent = data.votes_per_minute;
+            }
+            
+            // Update votes today
+            const votesToday = document.getElementById('votesTodayCount');
+            if (votesToday) {
+                votesToday.textContent = data.votes_today.toLocaleString();
+            }
+            
+            // Update peak time
+            const peakTime = document.getElementById('peakTime');
+            if (peakTime) {
+                peakTime.textContent = data.peak_voting_times.peak_label;
+            }
+            
+            // Update average votes per hour
+            const avgVotes = document.getElementById('avgVotesPerHour');
+            if (avgVotes) {
+                avgVotes.textContent = data.avg_votes_per_hour;
+            }
+            
+            // Update chart if it exists
+            if (monitoringChart && data.peak_voting_times.hourly) {
+                monitoringChart.data.datasets[0].data = data.peak_voting_times.hourly;
+                monitoringChart.update();
+            }
+        }
+        
+        // Initialize monitoring on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize chart with initial data from server-side rendering
+            const initialHourlyData = @json($monitoringData['peak_voting_times']['hourly'] ?? array_fill(0, 24, 0));
+            initMonitoringChart(initialHourlyData);
+            
+            // Start polling for real-time updates (every 5 seconds)
+            setInterval(fetchMonitoringData, 5000);
+            
+            // Load initial report data when reports section is shown
+            loadReportData();
+        });
+
+        // ==================== REPORTS & ANALYTICS FUNCTIONS ====================
+        
+        // Chart instances for Reports
+        let turnoutChart, turnoutPieChart, resultsComparisonChart, aiHourlyChart, aiDailyChart, cumulativeChart, heatmapChart;
+        
+        // Current report tab
+        let currentReportTab = 'turnout';
+        
+        // Show report tab
+        function showReportTab(tabName) {
+            // Update tab active state
+            document.querySelectorAll('#reports .tabs .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all report tabs
+            document.querySelectorAll('.report-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabMap = {
+                'turnout': 'report-turnout',
+                'results': 'report-results',
+                'ai-patterns': 'report-ai-patterns',
+                'time-based': 'report-time-based'
+            };
+            
+            const tabId = tabMap[tabName];
+            if (tabId) {
+                document.getElementById(tabId).classList.add('active');
+                currentReportTab = tabName;
+                loadReportData();
+            }
+        }
+        
+        // Load report data based on current filters
+        async function loadReportData() {
+            const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
+            const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
+            const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
+            
+            switch(currentReportTab) {
+                case 'turnout':
+                    await loadVoterTurnoutReport(electionId, dateRange);
+                    break;
+                case 'results':
+                    await loadElectionResultsReport(electionId);
+                    break;
+                case 'ai-patterns':
+                    await loadAIPatternsReport(dateRange);
+                    break;
+                case 'time-based':
+                    await loadTimeBasedReport(electionId, dateRange);
+                    break;
+            }
+        }
+        
+        // Load Voter Turnout Report
+        async function loadVoterTurnoutReport(electionId, days) {
+            try {
+                let url = `/admin/api/reports/voter-turnout?days=${days}`;
+                if (electionId) {
+                    url += `&election_id=${electionId}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update summary stats
+                    const summary = result.summary;
+                    document.getElementById('totalRegisteredVoters').textContent = summary.total_voters.toLocaleString();
+                    document.getElementById('totalVotesCast').textContent = summary.total_votes.toLocaleString();
+                    document.getElementById('overallTurnout').textContent = summary.overall_turnout + '%';
+                    
+                    // Calculate average turnout
+                    const avgTurnout = result.data.length > 0 
+                        ? (result.data.reduce((sum, e) => sum + e.turnout_rate, 0) / result.data.length).toFixed(1)
+                        : 0;
+                    document.getElementById('avgTurnout').textContent = avgTurnout + '%';
+                    
+                    // Update table
+                    const tableBody = document.getElementById('turnoutTableBody');
+                    if (result.data.length > 0) {
+                        tableBody.innerHTML = result.data.map(election => `
+                            <tr>
+                                <td>${election.title}</td>
+                                <td>${election.type}</td>
+                                <td><span class="status-badge status-${election.status}">${election.status}</span></td>
+                                <td>${election.votes_cast.toLocaleString()}</td>
+                                <td>${election.turnout_rate}%</td>
+                                <td>${new Date(election.start_date).toLocaleDateString()} - ${new Date(election.end_date).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No data available</td></tr>';
+                    }
+                    
+                    // Update charts
+                    updateTurnoutCharts(result.data);
+                }
+            } catch (error) {
+                console.error('Error loading voter turnout report:', error);
+                showNotification('Failed to load voter turnout data', 'error');
+            }
+        }
+        
+        // Update turnout charts
+        function updateTurnoutCharts(data) {
+            // Bar chart - Turnout by Election
+            const ctx1 = document.getElementById('turnoutChart');
+            if (ctx1) {
+                if (turnoutChart) turnoutChart.destroy();
+                
+                turnoutChart = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(e => e.title.substring(0, 20)),
+                        datasets: [{
+                            label: 'Turnout %',
+                            data: data.map(e => e.turnout_rate),
+                            backgroundColor: 'rgba(0, 77, 0, 0.7)',
+                            borderColor: '#004d00',
+                            borderWidth: 2,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Turnout %'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Pie chart - Turnout distribution
+            const ctx2 = document.getElementById('turnoutPieChart');
+            if (ctx2) {
+                if (turnoutPieChart) turnoutPieChart.destroy();
+                
+                const highTurnout = data.filter(e => e.turnout_rate >= 70).length;
+                const medTurnout = data.filter(e => e.turnout_rate >= 40 && e.turnout_rate < 70).length;
+                const lowTurnout = data.filter(e => e.turnout_rate < 40).length;
+                
+                turnoutPieChart = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['High (70%+)', 'Medium (40-70%)', 'Low (<40%)'],
+                        datasets: [{
+                            data: [highTurnout, medTurnout, lowTurnout],
+                            backgroundColor: ['#28a745', '#f39c12', '#dc3545'],
+                            borderWidth: 3,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+        }
+        
+        // Load Election Results Report
+        async function loadElectionResultsReport(electionId) {
+            try {
+                let url = '/admin/api/reports/election-results';
+                if (electionId) {
+                    url += `?election_id=${electionId}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update table
+                    const tableBody = document.getElementById('resultsTableBody');
+                    if (result.data.length > 0) {
+                        let html = '';
+                        result.data.forEach(election => {
+                            election.candidates.forEach(candidate => {
+                                const isWinner = candidate.name === election.winner;
+                                html += `
+                                    <tr>
+                                        <td>${election.title}</td>
+                                        <td>${candidate.name} ${isWinner ? '<span class="status-badge status-active" style="margin-left: 5px;">Winner</span>' : ''}</td>
+                                        <td>${candidate.votes.toLocaleString()}</td>
+                                        <td>${candidate.percentage}%</td>
+                                        <td><span class="status-badge status-${election.status}">${election.status}</span></td>
+                                        <td>${election.winner}</td>
+                                    </tr>
+                                `;
+                            });
+                        });
+                        tableBody.innerHTML = html;
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No data available</td></tr>';
+                    }
+                    
+                    // Update chart
+                    updateResultsChart(result.data);
+                }
+            } catch (error) {
+                console.error('Error loading election results report:', error);
+                showNotification('Failed to load election results data', 'error');
+            }
+        }
+        
+        // Update results comparison chart
+        function updateResultsChart(data) {
+            const ctx = document.getElementById('resultsComparisonChart');
+            if (!ctx) return;
+            
+            if (resultsComparisonChart) resultsComparisonChart.destroy();
+            
+            // Get all candidates from all elections
+            const allCandidates = [];
+            data.forEach(election => {
+                election.candidates.forEach(candidate => {
+                    allCandidates.push({
+                        name: `${candidate.name} (${election.title.substring(0, 15)})`,
+                        votes: candidate.votes
+                    });
+                });
+            });
+            
+            // Sort by votes and take top 10
+            const topCandidates = allCandidates
+                .sort((a, b) => b.votes - a.votes)
+                .slice(0, 10);
+            
+            resultsComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topCandidates.map(c => c.name),
+                    datasets: [{
+                        label: 'Votes',
+                        data: topCandidates.map(c => c.votes),
+                        backgroundColor: [
+                            'rgba(0, 77, 0, 0.7)',
+                            'rgba(111, 66, 193, 0.7)',
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(26, 188, 156, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(46, 204, 113, 0.7)'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#fff',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Votes'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load AI Patterns Report
+        async function loadAIPatternsReport(days) {
+            try {
+                const url = `/admin/api/reports/ai-patterns?days=${days}`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Update stats
+                    document.getElementById('aiTotalVotes').textContent = data.total_votes.toLocaleString();
+                    document.getElementById('aiUniqueVoters').textContent = data.unique_voters.toLocaleString();
+                    document.getElementById('aiPeakHour').textContent = data.peak_hour_label;
+                    document.getElementById('aiAvgPerHour').textContent = data.avg_votes_per_hour;
+                    
+                    // Update anomalies table
+                    const anomaliesBody = document.getElementById('anomaliesTableBody');
+                    if (data.anomalies && data.anomalies.length > 0) {
+                        anomaliesBody.innerHTML = data.anomalies.map(anomaly => `
+                            <tr>
+                                <td><span class="anomaly-badge anomaly-medium">${anomaly.type}</span></td>
+                                <td>${anomaly.hour}:00</td>
+                                <td>${anomaly.count}</td>
+                                <td>${anomaly.threshold}</td>
+                                <td>${anomaly.description}</td>
+                                <td>
+                                    <button class="action-btn btn-view">View</button>
+                                    <button class="action-btn btn-dismiss">Dismiss</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        anomaliesBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No anomalies detected</td></tr>';
+                    }
+                    
+                    // Update charts
+                    updateAICharts(data);
+                }
+            } catch (error) {
+                console.error('Error loading AI patterns report:', error);
+                showNotification('Failed to load AI patterns data', 'error');
+            }
+        }
+        
+        // Update AI charts
+        function updateAICharts(data) {
+            // Hourly activity chart
+            const ctx1 = document.getElementById('aiHourlyChart');
+            if (ctx1) {
+                if (aiHourlyChart) aiHourlyChart.destroy();
+                
+                const labels = [];
+                for (let i = 0; i < 24; i++) {
+                    labels.push(i + ':00');
+                }
+                
+                aiHourlyChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Votes',
+                            data: data.votes_by_hour,
+                            borderColor: '#004d00',
+                            backgroundColor: 'rgba(0, 77, 0, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Votes'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Hour of Day'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Daily trends chart
+            const ctx2 = document.getElementById('aiDailyChart');
+            if (ctx2) {
+                if (aiDailyChart) aiDailyChart.destroy();
+                
+                const labels = data.votes_by_day.map(d => d.date);
+                const values = data.votes_by_day.map(d => d.count);
+                
+                aiDailyChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Daily Votes',
+                            data: values,
+                            backgroundColor: 'rgba(111, 66, 193, 0.7)',
+                            borderColor: '#6f42c1',
+                            borderWidth: 2,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Votes'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Load Time-Based Report
+        async function loadTimeBasedReport(electionId, days) {
+            try {
+                let url = `/admin/api/reports/time-based?days=${days}`;
+                if (electionId) {
+                    url += `&election_id=${electionId}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Update stats
+                    document.getElementById('timeTotalVotes').textContent = data.total_votes.toLocaleString();
+                    document.getElementById('timeDaysAnalyzed').textContent = data.days_analyzed;
+                    
+                    const changeText = data.comparison.change >= 0 
+                        ? `+${data.comparison.change}%` 
+                        : `${data.comparison.change}%`;
+                    const changeElement = document.getElementById('timeChangePercent');
+                    changeElement.textContent = changeText;
+                    changeElement.style.color = data.comparison.change >= 0 ? '#28a745' : '#dc3545';
+                    
+                    const avgDaily = data.days_analyzed > 0 
+                        ? Math.round(data.total_votes / data.days_analyzed) 
+                        : 0;
+                    document.getElementById('timeAvgDaily').textContent = avgDaily.toLocaleString();
+                    
+                    // Update charts
+                    updateTimeCharts(data);
+                }
+            } catch (error) {
+                console.error('Error loading time-based report:', error);
+                showNotification('Failed to load time-based data', 'error');
+            }
+        }
+        
+        // Update time-based charts
+        function updateTimeCharts(data) {
+            // Cumulative votes chart
+            const ctx1 = document.getElementById('cumulativeChart');
+            if (ctx1) {
+                if (cumulativeChart) cumulativeChart.destroy();
+                
+                const labels = data.cumulative.map(d => d.date);
+                const values = data.cumulative.map(d => d.count);
+                
+                cumulativeChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cumulative Votes',
+                            data: values,
+                            borderColor: '#004d00',
+                            backgroundColor: 'rgba(0, 77, 0, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Total Votes'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Heatmap chart (hourly activity)
+            const ctx2 = document.getElementById('heatmapChart');
+            if (ctx2) {
+                if (heatmapChart) heatmapChart.destroy();
+                
+                // Prepare heatmap data
+                const hourlyLabels = [];
+                for (let i = 0; i < 24; i++) {
+                    hourlyLabels.push(i + ':00');
+                }
+                
+                // Use the daily_hourly data for heatmap
+                const allHourlyData = Object.values(data.daily_hourly || {});
+                const avgHourly = [];
+                for (let h = 0; h < 24; h++) {
+                    let sum = 0, count = 0;
+                    allHourlyData.forEach(day => {
+                        if (day[h] !== undefined) {
+                            sum += day[h];
+                            count++;
+                        }
+                    });
+                    avgHourly.push(count > 0 ? Math.round(sum / count) : 0);
+                }
+                
+                heatmapChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: hourlyLabels,
+                        datasets: [{
+                            label: 'Avg Votes per Hour',
+                            data: avgHourly,
+                            backgroundColor: avgHourly.map(v => {
+                                const max = Math.max(...avgHourly);
+                                const intensity = max > 0 ? v / max : 0;
+                                return `rgba(0, 77, 0, ${0.2 + intensity * 0.8})`;
+                            }),
+                            borderColor: '#004d00',
+                            borderWidth: 1,
+                            borderRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Average Votes'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Hour of Day'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
+            const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
+            const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
+            
+            let url = `/admin/api/reports/export?type=${reportType}&days=${dateRange}`;
+            if (electionId) {
+                url += `&election_id=${electionId}`;
+            }
+            
+            // Create a link and trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('CSV export started', 'success');
+        }
+        
+        // Export to PDF
+        function exportToPDF() {
+            const reportType = document.getElementById('reportType') ? document.getElementById('reportType').value : 'voter-turnout';
+            const electionId = document.getElementById('reportElectionFilter') ? document.getElementById('reportElectionFilter').value : '';
+            const dateRange = document.getElementById('reportDateRange') ? document.getElementById('reportDateRange').value : '7';
+            
+            let url = `/admin/api/reports/export-pdf?type=${reportType}&days=${dateRange}`;
+            if (electionId) {
+                url += `&election_id=${electionId}`;
+            }
+            
+            // Open in new tab for printing/saving
+            window.open(url, '_blank');
+            
+            showNotification('PDF report opened in new tab. Use browser print to save as PDF.', 'info');
+        }
     </script>
 </body>
 </html>
