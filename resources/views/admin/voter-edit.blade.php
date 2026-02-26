@@ -464,7 +464,7 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <a href="{{ route('admin.voter-management.index') }}" class="back-btn">
+            <a href="#" onclick="history.back(); return false;" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Voters
             </a>
 

@@ -123,4 +123,131 @@ class VoterController extends Controller
 
         return redirect()->route('admin.voter-management.index')->with('success', 'Voter created successfully');
     }
+
+    // API Methods for AJAX functionality
+    public function apiIndex(Request $request)
+    {
+        $query = User::where('user_type', 'voter');
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $voters = $query->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $voters->map(function($voter) {
+                return [
+                    'id' => $voter->id,
+                    'name' => $voter->name,
+                    'email' => $voter->email,
+                    'status' => $this->getVoterStatus($voter),
+                    'verified' => $voter->email_verified_at ? 'Yes' : 'No',
+                    'voted' => $this->hasVoted($voter) ? 'Yes' : 'No',
+                    'last_login' => $voter->last_login_at ? $voter->last_login_at->format('Y-m-d H:i') : 'Never',
+                    'actions' => $this->getActionButtons($voter)
+                ];
+            })
+        ]);
+    }
+
+    public function apiApprove($id)
+    {
+        $voter = User::findOrFail($id);
+
+        $voter->update([
+            'email_verified_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voter approved successfully'
+        ]);
+    }
+
+    public function apiBlock($id)
+    {
+        $voter = User::findOrFail($id);
+
+        $voter->update([
+            'blocked_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voter blocked successfully'
+        ]);
+    }
+
+    public function apiUnblock($id)
+    {
+        $voter = User::findOrFail($id);
+
+        $voter->update([
+            'blocked_at' => null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voter unblocked successfully'
+        ]);
+    }
+
+    public function apiDestroy($id)
+    {
+        $voter = User::findOrFail($id);
+        $voter->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voter deleted successfully'
+        ]);
+    }
+
+    // Helper methods
+    private function getVoterStatus($voter)
+    {
+        if ($voter->blocked_at) {
+            return 'Blocked';
+        } elseif ($voter->email_verified_at) {
+            return 'Verified';
+        } else {
+            return 'Pending';
+        }
+    }
+
+    private function hasVoted($voter)
+    {
+        // This would need to be implemented based on your voting system
+        // For now, return false
+        return false;
+    }
+
+    private function getActionButtons($voter)
+    {
+        $buttons = [];
+
+        if (!$voter->email_verified_at) {
+            $buttons[] = '<button class="action-btn btn-approve" onclick="approveVoter(' . $voter->id . ')"><i class="fas fa-check"></i></button>';
+        }
+
+        $buttons[] = '<button class="action-btn btn-view" onclick="viewVoter(' . $voter->id . ')"><i class="fas fa-eye"></i></button>';
+        $buttons[] = '<button class="action-btn btn-edit" onclick="editVoter(' . $voter->id . ')"><i class="fas fa-edit"></i></button>';
+
+        if ($voter->blocked_at) {
+            $buttons[] = '<button class="action-btn btn-approve" onclick="unblockVoter(' . $voter->id . ')"><i class="fas fa-unlock"></i></button>';
+        } else {
+            $buttons[] = '<button class="action-btn btn-delete" onclick="blockVoter(' . $voter->id . ')"><i class="fas fa-ban"></i></button>';
+        }
+
+        $buttons[] = '<button class="action-btn btn-delete" onclick="deleteVoter(' . $voter->id . ')"><i class="fas fa-times"></i></button>';
+
+        return implode(' ', $buttons);
+    }
 }
