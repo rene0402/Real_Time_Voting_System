@@ -11,7 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'prevent-back' => \App\Http\Middleware\PreventBackButtonCache::class,
+        ]);
+
+        // Apply prevent-back middleware to web routes
+        $middleware->web(prepend: [
+            \App\Http\Middleware\PreventBackButtonCache::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -18,7 +18,10 @@ class Election extends Model
         'description',
         'total_votes',
         'is_paused',
-        'results_locked'
+        'results_locked',
+        'organization_id',
+        'voter_eligibility',
+        'voting_method'
     ];
 
     protected $casts = [
@@ -55,6 +58,26 @@ class Election extends Model
         return $this->hasMany(Candidate::class);
     }
 
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function positions()
+    {
+        return $this->hasMany(Position::class)->ordered();
+    }
+
+    public function voterEligibility()
+    {
+        return $this->hasOne(VoterEligibility::class);
+    }
+
+    public function settings()
+    {
+        return $this->hasOne(ElectionSettings::class);
+    }
+
     // Accessors
     public function getIsActiveAttribute()
     {
@@ -77,5 +100,44 @@ class Election extends Model
         }
 
         return $this->end_date->diffForHumans(null, true) . ' remaining';
+    }
+
+    public function getVoterEligibilityArrayAttribute()
+    {
+        return $this->voter_eligibility ? json_decode($this->voter_eligibility, true) : [];
+    }
+
+    public function getTotalPositionsAttribute()
+    {
+        return $this->positions()->count();
+    }
+
+    public function getTotalCandidatesAttribute()
+    {
+        return $this->candidates()->count();
+    }
+
+    // Get ballot structure for voting
+    public function getBallotStructureAttribute()
+    {
+        return $this->positions()->with('candidates')->ordered()->get()->map(function($position) {
+            return [
+                'id' => $position->id,
+                'name' => $position->name,
+                'description' => $position->description,
+                'seats_available' => $position->seats_available,
+                'election_type' => $position->election_type,
+                'candidates' => $position->candidates->map(function($candidate) {
+                    return [
+                        'id' => $candidate->id,
+                        'name' => $candidate->name,
+                        'party_affiliation' => $candidate->party_affiliation,
+                        'photo_url' => $candidate->photo_url,
+                        'description' => $candidate->description,
+                        'manifesto' => $candidate->manifesto
+                    ];
+                })
+            ];
+        });
     }
 }

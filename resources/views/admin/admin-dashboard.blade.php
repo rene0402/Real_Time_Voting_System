@@ -1871,19 +1871,22 @@
                 <!-- Election Management Tabs -->
                 <div class="election-tabs">
                     <div class="election-tab active" onclick="showElectionSection('overview')">Elections</div>
-                    <div class="election-tab" onclick="showElectionSection('create')">Create</div>
+                    <div class="election-tab" onclick="showElectionSection('basic-info')">Basic Info</div>
+                    <div class="election-tab" onclick="showElectionSection('voter-eligibility')">Voter Eligibility</div>
+                    <div class="election-tab" onclick="showElectionSection('positions')">Positions</div>
+                    <div class="election-tab" onclick="showElectionSection('candidates')">Candidates</div>
+                    <div class="election-tab" onclick="showElectionSection('ballot-preview')">Ballot Preview</div>
                     <div class="election-tab" onclick="showElectionSection('manage')">Manage</div>
                     <div class="election-tab" onclick="showElectionSection('security')">Security</div>
                 </div>
 
-                <!-- Election Overview Panel -->
+<!-- Election Overview Panel -->
                 <div id="election-overview" class="election-section active-election-section">
                     <div class="table-container">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <h3 class="chart-title">All Elections</h3>
                             <div>
                                 <input type="text" class="search-input" placeholder="Search..." id="electionSearch">
-                                <button class="action-btn btn-primary" onclick="showElectionSection('create')">+ New Election</button>
+<button class="action-btn btn-primary" onclick="window.location.href='/admin/election-management'">+ New Election</button>
                             </div>
                         </div>
                         <table id="electionsTable">
@@ -1955,50 +1958,67 @@
                     </div>
                 </div>
 
-                <!-- Create/Edit Election Section -->
-                <div id="election-create" class="election-section">
+<!-- Basic Info Section -->
+                <div id="election-basic-info" class="election-section">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Create / Edit Election</div>
+                            <div class="card-title">Step 1: Basic Information & Organization</div>
                         </div>
-                        <div class="election-form" id="electionForm">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Election Title</label>
-                                    <input type="text" class="form-input" id="electionTitle" placeholder="Enter election title">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Election Type</label>
-                                    <select class="form-input" id="electionType">
-                                        <option value="single">Single Position</option>
-                                        <option value="multi">Multi-Position</option>
-                                        <option value="referendum">Referendum</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Start Date & Time</label>
-                                    <input type="datetime-local" class="form-input" id="electionStart">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">End Date & Time</label>
-                                    <input type="datetime-local" class="form-input" id="electionEnd">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-input" id="electionDescription" rows="2" placeholder="Brief description"></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="action-btn btn-secondary" onclick="showElectionSection('overview')">Cancel</button>
-                                <button type="button" class="action-btn btn-primary" onclick="saveElection()">Save Election</button>
-                            </div>
+                        <div class="card-body">
+<p>Create and manage election basic information. <a href="{{ route('admin.election-management') }}">Go to full election wizard</a></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Management Section (Combined Candidates, Voters, Results) -->
+                <!-- Voter Eligibility Section -->
+                <div id="election-voter-eligibility" class="election-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Step 2: Voter Eligibility</div>
+                        </div>
+                        <div class="card-body">
+<p>Configure voter eligibility settings. <a href="{{ route('admin.election-management') }}">Go to full election wizard</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Positions Section -->
+                <div id="election-positions" class="election-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Step 3: Positions</div>
+                        </div>
+                        <div class="card-body">
+<p>Manage election positions. <a href="{{ route('admin.election-management') }}">Go to full election wizard</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidates Section -->
+                <div id="election-candidates" class="election-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Step 4: Candidates</div>
+                        </div>
+                        <div class="card-body">
+<p>Add and manage candidates. <a href="{{ route('admin.election-management') }}">Go to full election wizard</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ballot Preview Section -->
+                <div id="election-ballot-preview" class="election-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Step 5: Ballot Preview</div>
+                        </div>
+                        <div class="card-body">
+<p>Preview the ballot before publishing. <a href="{{ route('admin.election-management') }}">Go to full election wizard</a></p>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Management Section (Combined Candidates, Voters, Results) -->
                 <div id="election-manage" class="election-section">
                     <div style="margin-bottom: 2rem;">
                         <label class="form-label">Select Election:</label>
@@ -3889,6 +3909,265 @@
 
         function viewResults() {
             showNotification('View results functionality would show detailed results', 'info');
+        }
+
+        // ==================== NEW WIZARD FUNCTIONS ====================
+
+        // Organization selection
+        function selectOrg(orgId) {
+            document.getElementById('selectedOrgId').value = orgId;
+            document.querySelectorAll('#orgGrid .org-card').forEach(card => {
+                card.style.borderColor = 'transparent';
+                card.style.background = '#f8f9fa';
+            });
+            const selected = document.querySelector(`#orgGrid .org-card[data-id="${orgId}"]`);
+            if (selected) {
+                selected.style.borderColor = '#004d00';
+                selected.style.background = 'rgba(0, 77, 0, 0.1)';
+            }
+        }
+
+        // Eligibility selection
+        function selectEligibility(type) {
+            document.querySelectorAll('.eligibility-option').forEach(opt => {
+                opt.style.borderColor = '#ddd';
+                opt.style.background = 'white';
+            });
+            event.currentTarget.style.borderColor = '#004d00';
+            event.currentTarget.style.background = 'rgba(0, 77, 0, 0.05)';
+
+            const emailGroup = document.getElementById('emailDomainsGroup');
+            if (emailGroup) {
+                emailGroup.style.display = type === 'email_domain' ? 'block' : 'none';
+            }
+        }
+
+        // Positions management
+        let positions = [];
+        let candidates = [];
+
+        function addPosition() {
+            const name = document.getElementById('positionName').value.trim();
+            const seats = parseInt(document.getElementById('positionSeats').value);
+
+            if (!name) {
+                showNotification('Please enter a position name', 'error');
+                return;
+            }
+
+            const position = {
+                id: Date.now(),
+                name: name,
+                seats_available: seats,
+                candidates: []
+            };
+
+            positions.push(position);
+            renderPositions();
+            updateCandidateSelect();
+
+            document.getElementById('positionName').value = '';
+            document.getElementById('positionSeats').value = '1';
+        }
+
+        function renderPositions() {
+            const list = document.getElementById('positionsList');
+            if (!list) return;
+
+            if (positions.length === 0) {
+                list.innerHTML = '<p style="color: #666; text-align: center; padding: 1rem;">No positions added yet.</p>';
+                return;
+            }
+
+            list.innerHTML = positions.map(pos => `
+                <div class="position-card" style="background: #f8f9fa; border-radius: 12px; padding: 1rem; margin-bottom: 0.5rem; border-left: 4px solid #004d00;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>${pos.name}</strong>
+                        <div>
+                            <span style="background: #004d00; color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">
+                                ${pos.seats_available} seat${pos.seats_available > 1 ? 's' : ''}
+                            </span>
+                            <button onclick="removePosition(${pos.id})" style="background: #dc3545; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+                        ${pos.candidates.length} candidate${pos.candidates.length !== 1 ? 's' : ''} added
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removePosition(id) {
+            positions = positions.filter(p => p.id !== id);
+            candidates = candidates.filter(c => c.position_id !== id);
+            renderPositions();
+            updateCandidateSelect();
+            renderCandidates();
+        }
+
+        function updateCandidateSelect() {
+            const select = document.getElementById('candidatePositionSelect');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">-- Select Position --</option>' +
+                positions.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+
+        function loadCandidatesForPosition() {
+            const positionId = document.getElementById('candidatePositionSelect').value;
+            const form = document.getElementById('candidateForm');
+            if (form) {
+                form.style.display = positionId ? 'block' : 'none';
+            }
+            renderCandidates();
+        }
+
+        function addCandidate() {
+            const positionId = parseInt(document.getElementById('candidatePositionSelect').value);
+            const name = document.getElementById('candidateName').value.trim();
+            const party = document.getElementById('candidateParty').value.trim();
+            const description = document.getElementById('candidateDescription').value.trim();
+
+            if (!name) {
+                showNotification('Please enter candidate name', 'error');
+                return;
+            }
+
+            const candidate = {
+                id: Date.now(),
+                position_id: positionId,
+                name: name,
+                party_affiliation: party || 'Independent',
+                description: description
+            };
+
+            candidates.push(candidate);
+
+            const position = positions.find(p => p.id === positionId);
+            if (position) {
+                position.candidates.push(candidate);
+            }
+
+            renderCandidates();
+
+            document.getElementById('candidateName').value = '';
+            document.getElementById('candidateParty').value = '';
+            document.getElementById('candidateDescription').value = '';
+        }
+
+        function renderCandidates() {
+            const list = document.getElementById('candidatesList');
+            const positionId = document.getElementById('candidatePositionSelect').value;
+
+            if (!list) return;
+
+            if (!positionId) {
+                list.innerHTML = '<p style="color: #666; text-align: center; padding: 1rem;">Select a position to view/add candidates.</p>';
+                return;
+            }
+
+            const positionCandidates = candidates.filter(c => c.position_id === parseInt(positionId));
+
+            if (positionCandidates.length === 0) {
+                list.innerHTML = '<p style="color: #666; text-align: center; padding: 1rem;">No candidates for this position yet.</p>';
+                return;
+            }
+
+            // Group by party
+            const grouped = {};
+            positionCandidates.forEach(c => {
+                const party = c.party_affiliation || 'Independent';
+                if (!grouped[party]) grouped[party] = [];
+                grouped[party].push(c);
+            });
+
+            let html = '';
+            Object.keys(grouped).forEach(party => {
+                html += `<div style="margin-bottom: 1rem;">
+                    <span style="background: #004d00; color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; margin-bottom: 0.5rem; display: inline-block;">${party}</span>`;
+
+                grouped[party].forEach(c => {
+                    html += `
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: white; border-radius: 8px; margin-bottom: 0.3rem; border: 1px solid #eee;">
+                            <div style="width: 35px; height: 35px; border-radius: 50%; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <strong>${c.name}</strong>
+                            </div>
+                            <button onclick="removeCandidate(${c.id})" style="background: #dc3545; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            });
+
+            list.innerHTML = html;
+        }
+
+        function removeCandidate(id) {
+            const candidate = candidates.find(c => c.id === id);
+            if (candidate) {
+                const position = positions.find(p => p.id === candidate.position_id);
+                if (position) {
+                    position.candidates = position.candidates.filter(c => c.id !== id);
+                }
+            }
+            candidates = candidates.filter(c => c.id !== id);
+            renderCandidates();
+        }
+
+        // Render ballot preview
+        function renderBallotPreview() {
+            const preview = document.getElementById('ballotPreview');
+            if (!preview) return;
+
+            if (positions.length === 0) {
+                preview.innerHTML = '<p style="text-align: center; color: #666;">Add positions and candidates to see preview</p>';
+                return;
+            }
+
+            let html = `<div style="text-align: center; margin-bottom: 2rem;">
+                <h3 style="color: #004d00;">${document.getElementById('electionTitle').value || 'Election Ballot'}</h3>
+                <p style="color: #666;">${positions.length} Position(s) • ${candidates.length} Candidate(s)</p>
+            </div>`;
+
+            positions.forEach(position => {
+                html += `<div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px dashed #eee;">
+                    <h4 style="color: #004d00; margin-bottom: 1rem;">
+                        ${position.name}
+                        <span style="font-size: 0.8rem; font-weight: normal; color: #666;">(Vote for ${position.seats_available})</span>
+                    </h4>`;
+
+                const posCandidates = candidates.filter(c => c.position_id === position.id);
+                posCandidates.forEach(candidate => {
+                    html += `
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.5rem;">
+                            <div style="width: 35px; height: 35px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; border: 2px solid #FFD700;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <strong>${candidate.name}</strong>
+                                <div style="font-size: 0.85rem; color: #666;">
+                                    <span style="background: #004d00; color: white; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.7rem;">${candidate.party_affiliation}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (posCandidates.length === 0) {
+                    html += '<p style="color: #999; font-style: italic;">No candidates yet</p>';
+                }
+
+                html += '</div>';
+            });
+
+            preview.innerHTML = html;
         }
 
         function viewAlerts() {
