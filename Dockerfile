@@ -9,7 +9,7 @@ RUN apk add --no-cache nginx nodejs npm mysql-client \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 
 # Copy and install PHP dependencies
 COPY composer.json composer.lock ./
@@ -30,22 +30,11 @@ RUN composer run-script post-autoload-dump
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Nginx config
-RUN printf 'server {\n\
-    listen ${PORT:-80};\n\
-    root /var/www/html/public;\n\
-    index index.php;\n\
-    location / { try_files $uri $uri/ /index.php?$query_string; }\n\
-    location ~ \\.php$ {\n\
-        fastcgi_pass 127.0.0.1:9000;\n\
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;\n\
-        include fastcgi_params;\n\
-    }\n\
-}\n' > /etc/nginx/http.d/default.conf
-
-COPY docker-entrypoint.sh /usr/local/bin/entrypoint.sh
+# Copy Nginx config and entrypoint
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["entrypoint.sh"]
