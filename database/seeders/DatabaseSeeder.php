@@ -16,23 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create super admin user
         User::updateOrCreate(
-            ['email' => 'ramy@pura.com'],
+            ['email' => env('ADMIN_EMAIL', 'admin@cpsu.edu.ph')],
             [
-                'name' => 'Super Admin',
-                'password' => Hash::make('password'),
-                'user_type' => 'admin',
-            ]
-        );
-
-        // Create admin user
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-                'user_type' => 'admin',
+                'name'               => env('ADMIN_NAME', 'Admin'),
+                'password'           => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'user_type'          => 'admin',
+                'email_verified_at'  => now(),
             ]
         );
 

@@ -75,6 +75,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    // Account Management
+    Route::get('/accounts', [App\Http\Controllers\Admin\DashboardController::class, 'accountManagement'])->name('accounts');
+    Route::post('/accounts', [App\Http\Controllers\Admin\DashboardController::class, 'storeAccount'])->name('accounts.store');
+    Route::delete('/accounts/{id}', [App\Http\Controllers\Admin\DashboardController::class, 'destroyAccount'])->name('accounts.destroy');
+
     // Election Management Page (New Wizard)
     Route::get('/election-management', function() {
         return view('admin.election-management');
