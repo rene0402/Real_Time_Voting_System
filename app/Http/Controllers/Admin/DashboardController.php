@@ -9,6 +9,7 @@ use App\Models\Election;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -55,6 +56,42 @@ class DashboardController extends Controller
             'activeUsersCount',
             'monitoringData'
         ));
+    }
+
+    public function accountManagement()
+    {
+        $accounts = User::orderBy('user_type')->orderBy('name')->get();
+        return view('admin.account-management', compact('accounts'));
+    }
+
+    public function storeAccount(Request $request)
+    {
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'user_type' => 'required|in:admin,voter',
+            'password'  => 'required|string|min:8|confirmed',
+        ]);
+
+        User::create([
+            'name'               => $request->name,
+            'email'              => $request->email,
+            'user_type'          => $request->user_type,
+            'password'           => Hash::make($request->password),
+            'email_verified_at'  => now(),
+        ]);
+
+        return redirect()->route('admin.accounts')->with('success', ucfirst($request->user_type) . ' account created successfully.');
+    }
+
+    public function destroyAccount($id)
+    {
+        $account = User::findOrFail($id);
+        if ($account->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+        $account->delete();
+        return back()->with('success', 'Account deleted successfully.');
     }
 
     /**

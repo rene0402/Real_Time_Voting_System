@@ -63,50 +63,7 @@
                     @enderror
                 </div>
 
-                <!-- Account Type -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
-                        Account Type
-                    </label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <input
-                                type="radio"
-                                id="voter"
-                                name="user_type"
-                                value="voter"
-                                {{ old('user_type') === 'voter' ? 'checked' : '' }}
-                                required
-                                class="hidden peer">
-                            <label
-                                for="voter"
-                                class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-indigo-600 peer-checked:bg-indigo-50 hover:border-gray-300 transition">
-                                <i class="fas fa-user-check text-2xl text-indigo-600 mb-2"></i>
-                                <span class="font-medium text-gray-900">Voter</span>
-                            </label>
-                        </div>
-
-                        <div>
-                            <input
-                                type="radio"
-                                id="admin"
-                                name="user_type"
-                                value="admin"
-                                {{ old('user_type') === 'admin' ? 'checked' : '' }}
-                                required
-                                class="hidden peer">
-                            <label
-                                for="admin"
-                                class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-indigo-600 peer-checked:bg-indigo-50 hover:border-gray-300 transition">
-                                <i class="fas fa-user-shield text-2xl text-indigo-600 mb-2"></i>
-                                <span class="font-medium text-gray-900">Admin</span>
-                            </label>
-                        </div>
-                    </div>
-                    @error('user_type')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                <input type="hidden" name="user_type" value="voter">
 
                 <!-- Password -->
                 <div>
