@@ -16,15 +16,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@cpsu.edu.ph')],
-            [
-                'name'               => env('ADMIN_NAME', 'Admin'),
-                'password'           => Hash::make(env('ADMIN_PASSWORD', 'password')),
-                'user_type'          => 'admin',
-                'email_verified_at'  => now(),
-            ]
-        );
+        // Create or update the admin user
+        try {
+            $adminEmail = env('ADMIN_EMAIL', 'admin@cpsu.edu.ph');
+
+            $admin = User::updateOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name'               => env('ADMIN_NAME', 'Admin'),
+                    'password'           => Hash::make(env('ADMIN_PASSWORD', 'admin1900')),
+                    'user_type'          => 'admin',
+                    'email_verified_at'  => now(),
+                ]
+            );
+
+            $action = $admin->wasRecentlyCreated ? 'Created' : 'Updated';
+            $this->command->info("{$action} admin user: {$adminEmail}");
+        } catch (\Throwable $e) {
+            $this->command->error('Failed to seed admin user: ' . $e->getMessage());
+        }
 
         // Create test voters with different statuses
         User::updateOrCreate(
