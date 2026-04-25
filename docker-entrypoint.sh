@@ -15,6 +15,9 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Substitute the PORT variable into the nginx config at runtime
+sed -i "s/listen 80;/listen ${PORT:-80};/" /etc/nginx/http.d/default.conf
+
 # Start php-fpm in background, then nginx in foreground
 php-fpm -D
 exec nginx -g "daemon off;"
