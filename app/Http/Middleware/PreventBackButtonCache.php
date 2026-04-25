@@ -23,6 +23,11 @@ class PreventBackButtonCache
         $response->headers->set('Expires', '0');
         $response->headers->set('Surrogate-Control', 'no-store');
 
+        // Enforce HTTPS for 1 year and include subdomains (HSTS).
+        // This prevents browsers from ever downgrading to HTTP after the
+        // first secure visit, eliminating mixed-content warnings.
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
         return $response;
     }
 }
