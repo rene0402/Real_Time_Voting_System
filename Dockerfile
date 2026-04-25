@@ -48,4 +48,14 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80
 
+# Railway overrides the start command via the dashboard. The CMD below is the
+# canonical start command that Railway should be configured to use:
+#
+#   sh -c "php bootstrap/create-admin.php && php -S 0.0.0.0:$PORT -t public"
+#
+# Running create-admin.php first ensures the admin account (ADMIN_EMAIL /
+# ADMIN_PASSWORD) is upserted on every deploy before the web server starts.
+# The ENTRYPOINT is kept so that plain `docker run` (without a Railway
+# start-command override) still goes through the full entrypoint script.
 ENTRYPOINT ["entrypoint.sh"]
+CMD ["sh", "-c", "php bootstrap/create-admin.php && php -S 0.0.0.0:$PORT -t public"]
